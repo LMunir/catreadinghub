@@ -6,6 +6,7 @@
     "ano": 1846,
     "tipo": "Encíclica",
     "formato": "pdf",
+    "tamanhoMB": 0.55,
     "arquivo": "acervo/Pio IX - Qui Pluribus - 1846.pdf"
   },
   {
@@ -15,6 +16,7 @@
     "ano": 1891,
     "tipo": "Encíclica",
     "formato": "pdf",
+    "tamanhoMB": 0.58,
     "arquivo": "acervo/Leo XIII - Rerum Novarum - 1891.pdf"
   },
   {
@@ -24,6 +26,7 @@
     "ano": 1937,
     "tipo": "Encíclica",
     "formato": "pdf",
+    "tamanhoMB": 0.6,
     "arquivo": "acervo/Pio XI - Divinis Redemptoris - 1937.pdf"
   },
   {
@@ -33,6 +36,7 @@
     "ano": 1937,
     "tipo": "Encíclica",
     "formato": "pdf",
+    "tamanhoMB": 0.43,
     "arquivo": "acervo/Pio XI - Mit Brennender Sorge - 1937.pdf"
   },
   {
@@ -42,6 +46,7 @@
     "ano": 2026,
     "tipo": "Encíclica",
     "formato": "pdf",
+    "tamanhoMB": 1.61,
     "arquivo": "acervo/Leo XIV - Magnifica Humanitas - 2026.pdf"
   }
 ]

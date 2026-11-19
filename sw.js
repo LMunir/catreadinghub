@@ -1,7 +1,8 @@
-const CACHE_NAME = 'bibliotheca-v3';
+const CACHE_NAME = 'bibliotheca-v4';
 const ASSETS = [
   './',
   './index.html',
+  './manifest.json',
   './catalogo.json',
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
@@ -24,7 +25,6 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Para bibliotecas externas (PDF.js/Fontes), prioriza o cache para abrir instantaneamente offline
   if (e.request.url.includes('cdnjs.cloudflare.com') || e.request.url.includes('fonts.')) {
     e.respondWith(
       caches.match(e.request).then((cached) => cached || fetch(e.request))
@@ -32,7 +32,6 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // Para o catálogo e app, busca a versão mais nova na rede primeiro
   e.respondWith(
     fetch(e.request)
       .then((res) => {

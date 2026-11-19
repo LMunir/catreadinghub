@@ -25,6 +25,10 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body {
+      overscroll-behavior-y: contain;
+    }
+
     body {
       background-color: var(--bg-parchment);
       color: var(--text-ink);
@@ -36,13 +40,20 @@
     header {
       background-color: var(--bordo-primary);
       color: var(--surface-card);
-      padding: 20px 18px 22px;
+      padding: 18px 18px 20px;
       border-bottom: 3px solid var(--gold-accent);
       box-shadow: 0 2px 10px rgba(0,0,0,0.12);
     }
 
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
     .subtitle {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: #E8DCC4;
       letter-spacing: 0.6px;
       text-transform: uppercase;
@@ -52,7 +63,22 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.75rem;
       font-weight: 700;
-      margin-bottom: 14px;
+      line-height: 1.15;
+    }
+
+    .backup-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .icon-header-btn {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(180, 142, 67, 0.5);
+      color: #FFFDF9;
+      padding: 6px 9px;
+      border-radius: 8px;
+      font-size: 0.74rem;
+      cursor: pointer;
     }
 
     .search-box {
@@ -66,10 +92,10 @@
       outline: none;
     }
 
-    /* Painel de Sincronização Offline */
+    /* Banner Offline */
     .sync-banner {
       background: var(--surface-card);
-      margin: 14px 16px 4px;
+      margin: 14px 16px 6px;
       padding: 12px 14px;
       border-radius: var(--radius);
       border: 1px solid var(--gold-subtle);
@@ -80,38 +106,83 @@
     }
 
     .sync-info { font-size: 0.82rem; color: var(--text-ink); line-height: 1.35; }
-    .sync-info span { display: block; font-size: 0.75rem; color: var(--text-muted); }
+    .sync-info span { display: block; font-size: 0.74rem; color: var(--text-muted); }
 
     .btn-sync {
       background: var(--bordo-primary);
       color: #FFF;
       border: 1px solid var(--gold-accent);
-      padding: 8px 13px;
+      padding: 8px 12px;
       border-radius: 10px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
     }
-    .btn-sync:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-sync:disabled { opacity: 0.65; cursor: not-allowed; }
 
-    /* Filtros */
+    /* Continuar Lendo */
+    .continue-section {
+      padding: 8px 16px 2px;
+    }
+
+    .continue-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: none;
+    }
+    .continue-scroll::-webkit-scrollbar { display: none; }
+
+    .continue-card {
+      background: var(--surface-card);
+      border: 1px solid var(--gold-accent);
+      border-radius: 12px;
+      padding: 11px 13px;
+      min-width: 225px;
+      max-width: 245px;
+      flex-shrink: 0;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(107, 29, 47, 0.06);
+    }
+
+    .continue-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--bordo-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .continue-meta {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      margin: 3px 0 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Filtros de Categoria */
     .filters {
       display: flex;
-      gap: 8px;
-      padding: 12px 16px 6px;
+      gap: 7px;
+      padding: 10px 16px 6px;
       overflow-x: auto;
       scrollbar-width: none;
     }
     .filters::-webkit-scrollbar { display: none; }
 
-    .chip, select.chip {
-      padding: 7px 14px;
+    .chip {
+      padding: 6px 13px;
       border-radius: 20px;
       border: 1px solid var(--gold-subtle);
       background: var(--surface-card);
       color: var(--text-ink);
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 500;
       white-space: nowrap;
       cursor: pointer;
@@ -122,13 +193,77 @@
       border-color: var(--bordo-primary);
     }
 
+    /* Barra Dedicada de Filtro por Papa e Ordenação */
+    .sub-controls-bar {
+      padding: 4px 16px 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pope-select {
+      flex: 1;
+      min-width: 0;
+      padding: 8px 11px;
+      border-radius: 11px;
+      border: 1px solid var(--gold-subtle);
+      background-color: var(--surface-card);
+      color: var(--text-ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .pope-select.has-selection {
+      background-color: var(--bordo-primary);
+      color: #FFF;
+      border-color: var(--gold-accent);
+      font-weight: 600;
+    }
+
+    .pope-select option {
+      background-color: var(--surface-card);
+      color: var(--text-ink);
+    }
+
+    .sort-select {
+      padding: 8px 10px;
+      border-radius: 11px;
+      border: 1px solid var(--gold-subtle);
+      background-color: var(--surface-card);
+      color: var(--text-ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .clear-pope-btn {
+      display: none;
+      background: var(--surface-card);
+      border: 1px solid var(--gold-accent);
+      color: var(--bordo-primary);
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .clear-pope-btn.visible { display: flex; }
+
     .container { padding: 8px 16px; }
 
     .section-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.25rem;
+      font-size: 1.22rem;
       color: var(--bordo-primary);
-      margin: 8px 0 12px;
+      margin: 6px 0 11px;
       border-bottom: 1px solid var(--gold-subtle);
       padding-bottom: 4px;
       display: flex;
@@ -141,12 +276,12 @@
       border: 1px solid var(--gold-subtle);
       border-left: 4px solid var(--bordo-primary);
       border-radius: var(--radius);
-      padding: 14px 15px;
-      margin-bottom: 12px;
+      padding: 13px 15px;
+      margin-bottom: 11px;
       box-shadow: 0 2px 6px rgba(35, 31, 32, 0.04);
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 9px;
     }
 
     .doc-header {
@@ -166,7 +301,7 @@
     }
 
     .doc-meta {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       margin-top: 5px;
       display: flex;
@@ -176,7 +311,7 @@
     }
 
     .badge {
-      font-size: 0.68rem;
+      font-size: 0.66rem;
       padding: 2px 7px;
       border-radius: 6px;
       background: #EFE8D8;
@@ -188,11 +323,11 @@
     .actions-right {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .dl-btn {
-      font-size: 0.74rem;
+      font-size: 0.73rem;
       padding: 5px 9px;
       border-radius: 8px;
       border: 1px solid var(--gold-accent);
@@ -218,10 +353,6 @@
       color: var(--text-muted);
       cursor: pointer;
       line-height: 1;
-    }
-    .ext-btn:hover {
-      background: #EFE8D8;
-      color: var(--bordo-primary);
     }
 
     .fav-btn {
@@ -255,10 +386,17 @@
     }
 
     .progress-text {
-      font-size: 0.74rem;
+      font-size: 0.73rem;
       color: var(--text-muted);
       white-space: nowrap;
       text-align: right;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 36px 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
     }
 
     .fab {
@@ -274,6 +412,7 @@
       font-weight: 600;
       box-shadow: 0 4px 14px rgba(107, 29, 47, 0.35);
       cursor: pointer;
+      z-index: 50;
     }
 
     /* ================= LEITOR INTEGRADO ================= */
@@ -284,8 +423,16 @@
       background: #E5DFD3;
       z-index: 200;
       flex-direction: column;
+      overscroll-behavior: contain;
     }
     .reader-overlay.open { display: flex; }
+
+    /* Modo Imersivo */
+    .reader-overlay.immersive .reader-header,
+    .reader-overlay.immersive .reader-settings-bar,
+    .reader-overlay.immersive .reader-footer {
+      display: none !important;
+    }
 
     .reader-header {
       background: var(--bordo-primary);
@@ -305,7 +452,7 @@
       color: #FFF;
       padding: 6px 10px;
       border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       cursor: pointer;
       white-space: nowrap;
     }
@@ -324,7 +471,7 @@
     .reader-tools {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .tool-btn {
@@ -338,20 +485,12 @@
       white-space: nowrap;
     }
 
-    .tool-btn.active-opt {
-      background: var(--gold-accent);
-      color: #1E1810;
-      border-color: #FFF;
-      font-weight: 600;
-    }
-
-    /* Barra Secundária de Ajustes do Leitor */
     .reader-settings-bar {
       display: none;
       background: var(--bordo-dark);
       color: #F7F3EA;
       padding: 8px 12px;
-      gap: 8px;
+      gap: 7px;
       overflow-x: auto;
       scrollbar-width: none;
       border-bottom: 1px solid var(--gold-accent);
@@ -368,13 +507,13 @@
       color: #FFFDF9;
       padding: 6px 11px;
       border-radius: 18px;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 500;
       cursor: pointer;
       white-space: nowrap;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
     }
 
     .opt-pill.locked-state {
@@ -383,10 +522,10 @@
       font-weight: 600;
     }
 
-    /* Área de Renderização das Páginas */
     .reader-canvas-area {
       flex: 1;
       overflow: auto;
+      overscroll-behavior: contain;
       display: flex;
       padding: 14px 10px;
       gap: 14px;
@@ -394,13 +533,11 @@
       position: relative;
     }
 
-    /* Direção Vertical */
     .reader-canvas-area.dir-vertical {
       flex-direction: column;
       align-items: center;
     }
 
-    /* Direção Horizontal */
     .reader-canvas-area.dir-horizontal {
       flex-direction: row;
       align-items: center;
@@ -408,17 +545,11 @@
       padding: 10px 16px;
     }
 
-    /* Trava de Movimentação / Zoom */
-    .reader-canvas-area.dir-vertical.scroll-locked {
-      overflow-x: hidden;
-      touch-action: pan-y;
-    }
-    .reader-canvas-area.dir-horizontal.scroll-locked {
-      overflow-y: hidden;
-      touch-action: pan-x;
+    /* Trava inteligente: bloqueia pinça sem impedir pan se houver zoom */
+    .reader-canvas-area.zoom-locked {
+      touch-action: pan-x pan-y;
     }
 
-    /* Modos de Cor */
     .reader-canvas-area.theme-sepia { background: #E9DFC8; }
     .reader-canvas-area.theme-sepia canvas { filter: sepia(0.32) brightness(0.96) contrast(0.96); }
 
@@ -427,7 +558,6 @@
 
     .reader-canvas-area.theme-light { background: #DCDCDC; }
 
-    /* Wrapper individual de cada página (suporta Contínuo e Página Única) */
     .page-wrapper {
       background: #FFF;
       box-shadow: 0 4px 16px rgba(0,0,0,0.2);
@@ -442,9 +572,7 @@
       scroll-snap-align: center;
     }
 
-    .page-wrapper canvas {
-      display: block;
-    }
+    .page-wrapper canvas { display: block; }
 
     .page-placeholder-label {
       color: #888;
@@ -455,11 +583,11 @@
     .reader-footer {
       background: var(--surface-card);
       border-top: 1px solid var(--gold-subtle);
-      padding: 10px 12px;
+      padding: 9px 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       flex-shrink: 0;
     }
 
@@ -467,9 +595,9 @@
       background: var(--bordo-primary);
       color: #FFF;
       border: none;
-      padding: 8px 12px;
+      padding: 8px 11px;
       border-radius: 8px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
     }
@@ -478,47 +606,53 @@
     .page-indicator {
       display: flex;
       align-items: center;
-      gap: 5px;
-      font-size: 0.82rem;
+      gap: 4px;
+      font-size: 0.8rem;
       color: var(--text-ink);
     }
 
     .page-input {
-      width: 46px;
+      width: 44px;
       text-align: center;
       padding: 5px 2px;
       border: 1px solid var(--gold-accent);
       border-radius: 6px;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
     }
 
-    .zoom-controls {
-      display: flex;
-      gap: 4px;
-    }
+    .zoom-controls { display: flex; gap: 4px; align-items: center; }
 
     .zoom-btn {
       background: #EFE8D8;
       border: 1px solid var(--gold-subtle);
       color: var(--text-ink);
-      width: 30px;
-      height: 30px;
+      width: 28px;
+      height: 28px;
       border-radius: 6px;
       font-weight: 700;
       cursor: pointer;
     }
-    .zoom-btn:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
+    .zoom-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .bm-footer-btn {
+      background: #EFE8D8;
+      border: 1px solid var(--gold-accent);
+      color: var(--bordo-primary);
+      padding: 5px 8px;
+      border-radius: 7px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
     }
 
-    /* Modal de Importação */
+    /* Modais (Importação & Marcadores) */
     .modal {
       display: none;
       position: fixed;
       inset: 0;
       background: rgba(35, 31, 32, 0.65);
-      z-index: 100;
+      z-index: 300;
       align-items: center;
       justify-content: center;
       padding: 16px;
@@ -529,6 +663,8 @@
       background: var(--surface-card);
       width: 100%;
       max-width: 440px;
+      max-height: 82vh;
+      overflow-y: auto;
       border-radius: var(--radius);
       padding: 20px;
       border: 1px solid var(--gold-accent);
@@ -537,7 +673,7 @@
     .modal-content h2 {
       font-family: 'Cormorant Garamond', serif;
       color: var(--bordo-primary);
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .form-group { margin-bottom: 12px; }
@@ -561,68 +697,115 @@
     .btn { padding: 9px 16px; border-radius: 8px; border: none; font-weight: 500; cursor: pointer; }
     .btn-secondary { background: #EAE2D3; color: var(--text-ink); }
     .btn-primary { background: var(--bordo-primary); color: #FFF; }
+
+    .bm-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--gold-subtle);
+      border-radius: 9px;
+      margin-bottom: 8px;
+      background: #FFF;
+    }
+    .bm-item-info { flex: 1; cursor: pointer; }
+    .bm-item-page { font-weight: 600; font-size: 0.82rem; color: var(--bordo-primary); }
+    .bm-item-note { font-size: 0.8rem; color: var(--text-ink); margin-top: 2px; }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="subtitle">Magistério & Tradição</div>
-    <h1>Bibliotheca Pontificia</h1>
+    <div class="header-top">
+      <div>
+        <div class="subtitle">Magistério & Tradição</div>
+        <h1>Bibliotheca Pontificia</h1>
+      </div>
+      <div class="backup-actions">
+        <button class="icon-header-btn" title="Exportar backup de progresso" onclick="exportBackup()">↓ Backup</button>
+        <button class="icon-header-btn" title="Restaurar backup" onclick="document.getElementById('backupFileInput').click()">↑ Restaurar</button>
+        <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="importBackup(event)" />
+      </div>
+    </div>
     <input type="text" id="searchInput" class="search-box" placeholder="Buscar por título, Papa ou ano..." />
   </header>
 
   <div class="sync-banner">
     <div class="sync-info">
       <strong id="offlineCount">0 de 0 documentos offline</strong>
-      <span id="syncStatus">Disponível para leitura sem internet</span>
+      <span id="syncStatus">Carregando acervo...</span>
     </div>
-    <button id="downloadAllBtn" class="btn-sync" onclick="downloadAllAcervo()">↓ Baixar todo o acervo</button>
+    <button id="downloadAllBtn" class="btn-sync" onclick="downloadAllAcervo()">↓ Baixar acervo</button>
   </div>
 
+  <!-- Seção Continuar Lendo -->
+  <section class="continue-section" id="continueSection" style="display:none;">
+    <h2 class="section-title" style="margin-top:2px;"><span>Continuar Lendo</span></h2>
+    <div class="continue-scroll" id="continueList"></div>
+  </section>
+
+  <!-- Filtros por Categoria -->
   <div class="filters">
     <button class="chip active" data-filter="todos">Todos</button>
     <button class="chip" data-filter="offline">✓ Offline</button>
     <button class="chip" data-filter="favoritos">★ Favoritos</button>
     <button class="chip" data-filter="Encíclica">Encíclicas</button>
     <button class="chip" data-filter="Bula">Bulas</button>
-    <select id="popeFilter" class="chip">
-      <option value="">Todos os Papas</option>
+    <button class="chip" data-filter="Exortação">Exortações</button>
+    <button class="chip" data-filter="Carta Apostólica">Cartas</button>
+    <button class="chip" data-filter="Constituição">Constituições</button>
+    <button class="chip" data-filter="Motu Proprio">Motu Proprio</button>
+    <button class="chip" data-filter="Decreto">Decretos</button>
+  </div>
+
+  <!-- Barra Dedicada de Filtro por Papa e Ordenação -->
+  <div class="sub-controls-bar">
+    <select id="popeFilter" class="pope-select">
+      <option value="">Todos os Pontífices</option>
+    </select>
+    <button id="clearPopeBtn" class="clear-pope-btn" title="Limpar filtro de Papa" onclick="clearPopeFilter()">✕</button>
+    <select id="sortSelect" class="sort-select" onchange="renderDocs()">
+      <option value="ano-asc">Ano ↑</option>
+      <option value="ano-desc">Ano ↓</option>
+      <option value="az">A–Z</option>
+      <option value="recentes">Recentes</option>
     </select>
   </div>
 
   <main class="container">
     <h2 class="section-title">
       <span>Acervo Completo</span>
-      <span id="totalFiltered" style="font-size: 0.85rem; font-family: 'Inter', sans-serif; color: var(--text-muted);"></span>
+      <span id="totalFiltered" style="font-size: 0.82rem; font-family: 'Inter', sans-serif; color: var(--text-muted);"></span>
     </h2>
     <div id="docList"></div>
   </main>
 
   <button class="fab" onclick="openModal()">+ Importar Arquivo</button>
 
-  <!-- Leitor Integrado de PDF -->
+  <!-- Leitor Integrado -->
   <div class="reader-overlay" id="readerOverlay">
     <div class="reader-header">
       <button class="reader-back" onclick="closeIntegratedReader()">← Voltar</button>
       <div class="reader-title" id="readerTitle">Documento</div>
       <div class="reader-tools">
-        <button class="tool-btn" id="settingsToggleBtn" onclick="toggleSettingsBar()">⚙ Ajustes</button>
+        <button class="tool-btn" title="Marcar página atual" onclick="addBookmarkPrompt()">+ 🔖</button>
+        <button class="tool-btn" id="settingsToggleBtn" onclick="toggleSettingsBar()">⚙</button>
         <button class="tool-btn" title="Abrir em leitor externo" onclick="openCurrentExternally()">↗</button>
       </div>
     </div>
 
-    <!-- Barra de Opções Extras do Leitor -->
-    <div class="reader-settings-bar open" id="readerSettingsBar">
+    <div class="reader-settings-bar" id="readerSettingsBar">
       <button class="opt-pill" id="flowToggleBtn" onclick="toggleFlowMode()">📜 Contínuo</button>
       <button class="opt-pill" id="dirToggleBtn" onclick="toggleDirectionMode()">↕ Vertical</button>
-      <button class="opt-pill" id="lockToggleBtn" onclick="toggleZoomLock()">🔓 Livre</button>
+      <button class="opt-pill" id="lockToggleBtn" onclick="toggleZoomLock()">🔓 Zoom Livre</button>
       <button class="opt-pill" id="themeToggleBtn" onclick="cycleReaderTheme()">🎨 Sépia</button>
     </div>
 
     <div class="reader-canvas-area theme-sepia dir-vertical" id="canvasArea"></div>
 
     <div class="reader-footer">
-      <button class="nav-page-btn" id="prevPageBtn" onclick="changePage(-1)">◀ Ant.</button>
+      <button class="nav-page-btn" id="prevPageBtn" onclick="changePage(-1)">◀</button>
 
       <div class="page-indicator">
         <span>Pág.</span>
@@ -630,12 +813,26 @@
         <span id="totalPagesSpan">de 1</span>
       </div>
 
+      <button class="bm-footer-btn" id="openBookmarksBtn" onclick="openBookmarksModal()">🔖 0</button>
+
       <div class="zoom-controls">
         <button class="zoom-btn" id="zoomOutBtn" onclick="adjustZoom(-0.2)">−</button>
         <button class="zoom-btn" id="zoomInBtn" onclick="adjustZoom(0.2)">+</button>
       </div>
 
-      <button class="nav-page-btn" id="nextPageBtn" onclick="changePage(1)">Próx. ▶</button>
+      <button class="nav-page-btn" id="nextPageBtn" onclick="changePage(1)">▶</button>
+    </div>
+  </div>
+
+  <!-- Modal de Marcadores da Obra -->
+  <div class="modal" id="bookmarksModal">
+    <div class="modal-content">
+      <h2>Marcadores Salvos</h2>
+      <div id="bookmarksList"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeBookmarksModal()">Fechar</button>
+        <button class="btn btn-primary" onclick="closeBookmarksModal(); addBookmarkPrompt();">+ Marcar Pág. Atual</button>
+      </div>
     </div>
   </div>
 
@@ -666,6 +863,10 @@
             <option value="Encíclica">Encíclica</option>
             <option value="Bula">Bula</option>
             <option value="Exortação">Exortação</option>
+            <option value="Carta Apostólica">Carta Apostólica</option>
+            <option value="Constituição">Constituição</option>
+            <option value="Motu Proprio">Motu Proprio</option>
+            <option value="Decreto">Decreto</option>
           </select>
         </div>
       </div>
@@ -689,27 +890,26 @@
     let currentFilter = 'todos';
     let mergedDocs = [];
 
-    // Preferências persistentes do Leitor
     const savedPrefs = JSON.parse(localStorage.getItem('bibliotheca_reader_prefs') || '{}');
     let readerPrefs = {
       themeIdx: savedPrefs.themeIdx ?? 0,
-      flow: savedPrefs.flow || 'continuous',     // 'continuous' | 'single'
-      direction: savedPrefs.direction || 'vertical', // 'vertical' | 'horizontal'
+      flow: savedPrefs.flow || 'continuous',
+      direction: savedPrefs.direction || 'vertical',
       locked: savedPrefs.locked ?? false
     };
 
     const themes = ['theme-sepia', 'theme-night', 'theme-light'];
     const themeLabels = { 'theme-sepia': '🎨 Sépia', 'theme-night': '🌙 Noturno', 'theme-light': '☀️ Claro' };
 
-    // Estado ativo do Leitor
     let activeDoc = null;
     let pdfInstance = null;
     let currentPage = 1;
     let zoomMultiplier = 1.0;
-    let renderGeneration = 0; // Cancela renderizações antigas ao trocar zoom/modo
+    let renderGeneration = 0;
     let lazyObserver = null;
     let activePageObserver = null;
     let saveProgressTimer = null;
+    let wakeLockSentinel = null;
 
     const request = indexedDB.open('BibliothecaDB', 2);
     request.onupgradeneeded = (e) => {
@@ -726,7 +926,7 @@
     async function syncCatalogAndLocal() {
       let nativeCatalog = [];
       try {
-        const res = await fetch('./catalogo.json');
+        const res = await fetch('./catalogo.json', { cache: 'no-store' });
         if (res.ok) nativeCatalog = await res.json();
       } catch (err) {}
 
@@ -744,6 +944,7 @@
             progresso: saved ? saved.progresso : 0,
             paginaAtual: saved ? (saved.paginaAtual || 1) : 1,
             totalPaginas: saved ? (saved.totalPaginas || 0) : 0,
+            marcadores: saved ? (saved.marcadores || []) : [],
             arquivoBlob: saved ? saved.arquivoBlob : null,
             ultimaLeitura: saved ? saved.ultimaLeitura : 0,
             isNative: true
@@ -751,46 +952,112 @@
         });
 
         localMap.forEach(manualDoc => {
-          combined.push({ ...manualDoc, isNative: false });
+          combined.push({
+            ...manualDoc,
+            marcadores: manualDoc.marcadores || [],
+            isNative: false
+          });
         });
 
         mergedDocs = combined;
         updateStats();
         updatePopeSelect();
+        renderContinueReading();
         renderDocs();
       };
     }
 
     function updateStats() {
       const total = mergedDocs.length;
-      const offline = mergedDocs.filter(d => !!d.arquivoBlob).length;
-      document.getElementById('offlineCount').textContent = `${offline} de ${total} documentos offline`;
+      const offlineDocs = mergedDocs.filter(d => !!d.arquivoBlob);
+      const pendingDocs = mergedDocs.filter(d => !d.arquivoBlob && d.arquivo);
+
+      const offlineMB = offlineDocs.reduce((acc, d) => acc + (d.tamanhoMB || (d.arquivoBlob ? d.arquivoBlob.size / 1048576 : 0)), 0);
+      const pendingMB = pendingDocs.reduce((acc, d) => acc + (d.tamanhoMB || 0), 0);
+
+      document.getElementById('offlineCount').textContent = `${offlineDocs.length} de ${total} offline (${offlineMB.toFixed(1)} MB)`;
+      document.getElementById('syncStatus').textContent = pendingDocs.length > 0
+        ? `${pendingDocs.length} pendentes (${pendingMB.toFixed(1)} MB)`
+        : 'Todo o acervo disponível sem internet';
 
       const btnAll = document.getElementById('downloadAllBtn');
-      if (total > 0 && offline === total) {
-        btnAll.textContent = '✓ Acervo 100% Offline';
+      if (total > 0 && pendingDocs.length === 0) {
+        btnAll.textContent = '✓ 100% Offline';
         btnAll.disabled = true;
       } else {
-        btnAll.textContent = '↓ Baixar todo o acervo';
+        btnAll.textContent = pendingMB > 0 ? `↓ Baixar (${pendingMB.toFixed(1)} MB)` : '↓ Baixar acervo';
         btnAll.disabled = false;
       }
+    }
+
+    function renderContinueReading() {
+      const section = document.getElementById('continueSection');
+      const list = document.getElementById('continueList');
+      const inProgress = mergedDocs
+        .filter(d => d.progresso > 0 && d.progresso < 100)
+        .sort((a, b) => (b.ultimaLeitura || 0) - (a.ultimaLeitura || 0))
+        .slice(0, 5);
+
+      if (inProgress.length === 0) {
+        section.style.display = 'none';
+        return;
+      }
+
+      section.style.display = 'block';
+      list.innerHTML = inProgress.map(doc => `
+        <div class="continue-card" onclick="openIntegratedReader('${doc.id}')">
+          <div class="continue-title">${doc.titulo}</div>
+          <div class="continue-meta">${doc.papa} • Pág. ${doc.paginaAtual}/${doc.totalPaginas || '?'}</div>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" style="width:${doc.progresso}%"></div></div>
+            <span class="progress-text">${doc.progresso}%</span>
+          </div>
+        </div>
+      `).join('');
     }
 
     function updatePopeSelect() {
       const select = document.getElementById('popeFilter');
       const currentVal = select.value;
-      const popes = [...new Set(mergedDocs.map(d => d.papa))].sort();
-      select.innerHTML = '<option value="">Todos os Papas</option>' +
-        popes.map(p => `<option value="${p}">${p}</option>`).join('');
+
+      const counts = {};
+      mergedDocs.forEach(d => {
+        counts[d.papa] = (counts[d.papa] || 0) + 1;
+      });
+
+      const popes = Object.keys(counts).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+      select.innerHTML = `<option value="">Todos os Pontífices (${mergedDocs.length})</option>` +
+        popes.map(p => `<option value="${p}">${p} (${counts[p]})</option>`).join('');
+
       select.value = currentVal;
+      syncPopeFilterUI();
+    }
+
+    function syncPopeFilterUI() {
+      const select = document.getElementById('popeFilter');
+      const clearBtn = document.getElementById('clearPopeBtn');
+      if (select.value) {
+        select.classList.add('has-selection');
+        clearBtn.classList.add('visible');
+      } else {
+        select.classList.remove('has-selection');
+        clearBtn.classList.remove('visible');
+      }
+    }
+
+    function clearPopeFilter() {
+      document.getElementById('popeFilter').value = '';
+      syncPopeFilterUI();
+      renderDocs();
     }
 
     function renderDocs() {
       const query = document.getElementById('searchInput').value.toLowerCase();
       const selectedPope = document.getElementById('popeFilter').value;
+      const sortBy = document.getElementById('sortSelect').value;
       const container = document.getElementById('docList');
 
-      const filtered = mergedDocs.filter(doc => {
+      let filtered = mergedDocs.filter(doc => {
         const matchesQuery = doc.titulo.toLowerCase().includes(query) ||
                              doc.papa.toLowerCase().includes(query) ||
                              String(doc.ano).includes(query);
@@ -802,11 +1069,28 @@
         return matchesQuery && matchesPope && matchesChip;
       });
 
+      filtered.sort((a, b) => {
+        if (sortBy === 'ano-desc') return (b.ano || 0) - (a.ano || 0) || a.titulo.localeCompare(b.titulo, 'pt-BR');
+        if (sortBy === 'az') return a.titulo.localeCompare(b.titulo, 'pt-BR');
+        if (sortBy === 'recentes') return (b.ultimaLeitura || 0) - (a.ultimaLeitura || 0);
+        // Padrão: ano-asc
+        const aNoYear = !a.ano;
+        const bNoYear = !b.ano;
+        if (aNoYear !== bNoYear) return aNoYear ? 1 : -1;
+        return (a.ano - b.ano) || a.titulo.localeCompare(b.titulo, 'pt-BR');
+      });
+
       document.getElementById('totalFiltered').textContent = `${filtered.length} itens`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty-state">Nenhum documento encontrado para os filtros selecionados.</div>`;
+        return;
+      }
 
       container.innerHTML = filtered.map(doc => {
         const isOffline = !!doc.arquivoBlob;
         const pageInfo = doc.totalPaginas > 0 ? `Pág. ${doc.paginaAtual}/${doc.totalPaginas} • ` : '';
+        const sizeLabel = doc.tamanhoMB ? ` • ${doc.tamanhoMB.toFixed(1)} MB` : '';
         return `
         <div class="doc-card">
           <div class="doc-header">
@@ -814,14 +1098,14 @@
               <div class="doc-title">${doc.titulo}</div>
               <div class="doc-meta">
                 <span class="badge">${doc.tipo}</span>
-                <span>${doc.papa}${doc.ano ? ' • ' + doc.ano : ''} • ${doc.formato.toUpperCase()}</span>
+                <span>${doc.papa}${doc.ano ? ' • ' + doc.ano : ''} • ${doc.formato.toUpperCase()}${sizeLabel}</span>
               </div>
             </div>
             <div class="actions-right">
-              <button class="dl-btn ${isOffline ? 'saved' : ''}" id="btn-dl-${doc.id}" onclick="downloadSingleDoc('${doc.id}')">
+              <button class="dl-btn ${isOffline ? 'saved' : ''}" id="btn-dl-${doc.id}" onclick="handleOfflineAction('${doc.id}')">
                 ${isOffline ? '✓ Offline' : '↓ Baixar'}
               </button>
-              <button class="ext-btn" title="Abrir em leitor externo do celular" onclick="openExternalReader('${doc.id}')">↗</button>
+              <button class="ext-btn" title="Abrir em leitor externo" onclick="openExternalReader('${doc.id}')">↗</button>
               <button class="fav-btn" onclick="toggleFavorite('${doc.id}')">
                 ${doc.favorito ? '★' : '☆'}
               </button>
@@ -837,6 +1121,29 @@
       `}).join('');
     }
 
+    async function handleOfflineAction(id) {
+      const doc = mergedDocs.find(d => d.id === id);
+      if (!doc) return;
+
+      if (doc.arquivoBlob) {
+        if (!doc.isNative) {
+          if (confirm(`"${doc.titulo}" foi importado manualmente. Deseja excluí-lo definitivamente do app?`)) {
+            const tx = db.transaction('documentos', 'readwrite');
+            tx.objectStore('documentos').delete(id).onsuccess = () => syncCatalogAndLocal();
+          }
+          return;
+        }
+        if (confirm(`Remover a cópia offline de "${doc.titulo}" para liberar espaço? Seu progresso e marcadores serão mantidos.`)) {
+          doc.arquivoBlob = null;
+          await saveRecordToDB(doc);
+          updateStats();
+          renderDocs();
+        }
+      } else {
+        await downloadSingleDoc(id);
+      }
+    }
+
     async function downloadSingleDoc(id) {
       const doc = mergedDocs.find(d => d.id === id);
       if (!doc || doc.arquivoBlob) return;
@@ -846,7 +1153,7 @@
 
       try {
         const response = await fetch(doc.arquivo);
-        if (!response.ok) throw new Error('Falha ao baixar arquivo');
+        if (!response.ok) throw new Error('Falha ao baixar');
         doc.arquivoBlob = await response.blob();
         await saveRecordToDB(doc);
         updateStats();
@@ -868,8 +1175,8 @@
       let count = 0;
       for (const doc of pending) {
         count++;
-        btn.textContent = `Baixando ${count}/${pending.length}...`;
-        status.textContent = `Salvando: ${doc.titulo}`;
+        btn.textContent = `${count}/${pending.length}...`;
+        status.textContent = `Baixando: ${doc.titulo}`;
         try {
           const res = await fetch(doc.arquivo);
           if (res.ok) {
@@ -881,7 +1188,6 @@
         } catch (e) {}
       }
 
-      status.textContent = 'Sincronização concluída';
       updateStats();
     }
 
@@ -894,7 +1200,90 @@
       });
     }
 
-    /* ================= CONTROLES E PREFERÊNCIAS DO LEITOR ================= */
+    /* ================= BACKUP & RESTAURAÇÃO ================= */
+    function exportBackup() {
+      const backupData = {
+        app: 'Bibliotheca Pontificia',
+        data: new Date().toISOString(),
+        registros: mergedDocs
+          .filter(d => d.favorito || d.progresso > 0 || (d.marcadores && d.marcadores.length > 0))
+          .map(d => ({
+            id: d.id,
+            favorito: d.favorito,
+            progresso: d.progresso,
+            paginaAtual: d.paginaAtual,
+            totalPaginas: d.totalPaginas,
+            marcadores: d.marcadores || [],
+            ultimaLeitura: d.ultimaLeitura
+          }))
+      };
+
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `bibliotheca-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (!parsed.registros || !Array.isArray(parsed.registros)) throw new Error('Formato inválido');
+
+          let restored = 0;
+          for (const item of parsed.registros) {
+            const target = mergedDocs.find(d => d.id === item.id);
+            if (target) {
+              target.favorito = item.favorito ?? target.favorito;
+              target.progresso = item.progresso ?? target.progresso;
+              target.paginaAtual = item.paginaAtual ?? target.paginaAtual;
+              target.totalPaginas = item.totalPaginas ?? target.totalPaginas;
+              target.marcadores = item.marcadores ?? target.marcadores;
+              target.ultimaLeitura = item.ultimaLeitura ?? target.ultimaLeitura;
+              await saveRecordToDB(target);
+              restored++;
+            }
+          }
+          alert(`Backup restaurado com sucesso (${restored} registros atualizados).`);
+          syncCatalogAndLocal();
+        } catch (err) {
+          alert('Arquivo de backup inválido.');
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    /* ================= WAKE LOCK (TELA ACESA) ================= */
+    async function requestScreenWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLockSentinel = await navigator.wakeLock.request('screen');
+        }
+      } catch (e) {}
+    }
+
+    function releaseScreenWakeLock() {
+      if (wakeLockSentinel) {
+        wakeLockSentinel.release().catch(() => {});
+        wakeLockSentinel = null;
+      }
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && activeDoc) {
+        requestScreenWakeLock();
+      }
+    });
+
+    /* ================= PREFERÊNCIAS DO LEITOR ================= */
     function saveReaderPrefs() {
       localStorage.setItem('bibliotheca_reader_prefs', JSON.stringify(readerPrefs));
     }
@@ -903,37 +1292,33 @@
       const area = document.getElementById('canvasArea');
       const vpMeta = document.getElementById('viewportMeta');
 
-      // Tema
       themes.forEach(t => area.classList.remove(t));
       const activeTheme = themes[readerPrefs.themeIdx];
       area.classList.add(activeTheme);
       document.getElementById('themeToggleBtn').textContent = themeLabels[activeTheme];
 
-      // Direção (Vertical / Horizontal)
       area.classList.remove('dir-vertical', 'dir-horizontal');
       area.classList.add(readerPrefs.direction === 'horizontal' ? 'dir-horizontal' : 'dir-vertical');
       document.getElementById('dirToggleBtn').textContent =
         readerPrefs.direction === 'horizontal' ? '↔ Horizontal' : '↕ Vertical';
 
-      // Fluxo (Contínuo / Página Única)
       document.getElementById('flowToggleBtn').textContent =
         readerPrefs.flow === 'continuous' ? '📜 Contínuo' : '📄 Pág. Única';
 
-      // Trava de Zoom e Movimentação
       const lockBtn = document.getElementById('lockToggleBtn');
       const zoomIn = document.getElementById('zoomInBtn');
       const zoomOut = document.getElementById('zoomOutBtn');
 
       if (readerPrefs.locked) {
-        area.classList.add('scroll-locked');
-        lockBtn.textContent = '🔒 Travado';
+        area.classList.add('zoom-locked');
+        lockBtn.textContent = '🔒 Zoom Travado';
         lockBtn.classList.add('locked-state');
         zoomIn.disabled = true;
         zoomOut.disabled = true;
         vpMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
       } else {
-        area.classList.remove('scroll-locked');
-        lockBtn.textContent = '🔓 Livre';
+        area.classList.remove('zoom-locked');
+        lockBtn.textContent = '🔓 Zoom Livre';
         lockBtn.classList.remove('locked-state');
         zoomIn.disabled = false;
         zoomOut.disabled = false;
@@ -954,7 +1339,7 @@
 
     function toggleDirectionMode() {
       readerPrefs.direction = readerPrefs.direction === 'vertical' ? 'horizontal' : 'vertical';
-      zoomMultiplier = 1.0; // Reseta zoom ao mudar orientação para encaixar na tela
+      zoomMultiplier = 1.0;
       saveReaderPrefs();
       applyReaderPreferencesUI();
       rebuildReaderViewport(currentPage);
@@ -988,10 +1373,17 @@
       }
 
       activeDoc = doc;
+      if (!activeDoc.marcadores) activeDoc.marcadores = [];
       zoomMultiplier = 1.0;
+
+      const overlay = document.getElementById('readerOverlay');
+      overlay.classList.remove('immersive');
+      overlay.classList.add('open');
+
       document.getElementById('readerTitle').textContent = doc.titulo;
-      document.getElementById('readerOverlay').classList.add('open');
+      updateBookmarksCounter();
       applyReaderPreferencesUI();
+      requestScreenWakeLock();
 
       const arrayBuffer = await doc.arquivoBlob.arrayBuffer();
       pdfInstance = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -1017,40 +1409,30 @@
       const area = document.getElementById('canvasArea');
       area.innerHTML = '';
 
-      // Calcula dimensões base usando a página alvo como referência
       const samplePage = await pdfInstance.getPage(targetPage);
       const unscaled = samplePage.getViewport({ scale: 1 });
       const availWidth = area.clientWidth - 24;
       const availHeight = area.clientHeight - 24;
 
-      let baseScale;
-      if (readerPrefs.direction === 'horizontal') {
-        // No modo horizontal, ajusta para caber inteiro na tela sem cortar topo/base
-        baseScale = Math.min(availWidth / unscaled.width, availHeight / unscaled.height);
-      } else {
-        // No modo vertical, ajusta à largura da tela para leitura confortável
-        baseScale = availWidth / unscaled.width;
-      }
+      const baseScale = readerPrefs.direction === 'horizontal'
+        ? Math.min(availWidth / unscaled.width, availHeight / unscaled.height)
+        : availWidth / unscaled.width;
 
       const finalScale = baseScale * zoomMultiplier;
       const estWidth = Math.round(unscaled.width * finalScale);
       const estHeight = Math.round(unscaled.height * finalScale);
 
       if (readerPrefs.flow === 'single') {
-        // MODO PÁGINA ÚNICA
         const wrapper = createPageWrapper(targetPage, estWidth, estHeight);
         area.appendChild(wrapper);
         await renderPageIntoWrapper(targetPage, wrapper, finalScale, currentGen);
         area.scrollTo({ top: 0, left: 0 });
         updateCurrentPageState(targetPage);
       } else {
-        // MODO LEITURA CONTÍNUA (Cria placeholders leves + renderiza sob demanda)
         for (let p = 1; p <= pdfInstance.numPages; p++) {
-          const wrapper = createPageWrapper(p, estWidth, estHeight);
-          area.appendChild(wrapper);
+          area.appendChild(createPageWrapper(p, estWidth, estHeight));
         }
 
-        // Observador 1: Renderiza o PDF assim que a página se aproxima da tela
         lazyObserver = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
@@ -1063,7 +1445,6 @@
           });
         }, { root: area, rootMargin: '700px' });
 
-        // Observador 2: Detecta qual página está visível no centro para salvar o progresso
         activePageObserver = new IntersectionObserver((entries) => {
           let bestPage = null;
           let maxRatio = 0;
@@ -1083,7 +1464,6 @@
           activePageObserver.observe(el);
         });
 
-        // Rola imediatamente até a página onde o usuário estava
         scrollToPageElement(targetPage, 'auto');
         updateCurrentPageState(targetPage);
       }
@@ -1105,7 +1485,7 @@
         const page = await pdfInstance.getPage(pageNum);
         if (gen !== renderGeneration) return;
 
-        const dpr = Math.min(window.devicePixelRatio || 1, 2); // Limita DPR a 2 para economizar memória
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
         const viewport = page.getViewport({ scale: scale * dpr });
 
         const canvas = document.createElement('canvas');
@@ -1147,10 +1527,10 @@
       activeDoc.progresso = Math.round((num / pdfInstance.numPages) * 100);
       activeDoc.ultimaLeitura = Date.now();
 
-      // Debounce de 400ms para salvar no IndexedDB sem engasgar a rolagem contínua
       clearTimeout(saveProgressTimer);
       saveProgressTimer = setTimeout(async () => {
         await saveRecordToDB(activeDoc);
+        renderContinueReading();
         renderDocs();
       }, 400);
     }
@@ -1189,16 +1569,95 @@
       rebuildReaderViewport(currentPage);
     }
 
-    // Suporte a gesto de deslizar (swipe) no modo Página Única Horizontal
+    /* ================= MARCADORES DE PÁGINA ================= */
+    function updateBookmarksCounter() {
+      const count = activeDoc && activeDoc.marcadores ? activeDoc.marcadores.length : 0;
+      document.getElementById('openBookmarksBtn').textContent = `🔖 ${count}`;
+    }
+
+    async function addBookmarkPrompt() {
+      if (!activeDoc) return;
+      const nota = prompt(`Nota para o marcador na Página ${currentPage} (opcional):`, `Página ${currentPage}`);
+      if (nota === null) return;
+
+      activeDoc.marcadores.push({
+        id: Date.now(),
+        pagina: currentPage,
+        nota: nota.trim() || `Página ${currentPage}`
+      });
+      activeDoc.marcadores.sort((a, b) => a.pagina - b.pagina);
+      await saveRecordToDB(activeDoc);
+      updateBookmarksCounter();
+    }
+
+    function openBookmarksModal() {
+      if (!activeDoc) return;
+      const list = document.getElementById('bookmarksList');
+      const bms = activeDoc.marcadores || [];
+
+      if (bms.length === 0) {
+        list.innerHTML = `<div class="empty-state" style="padding:20px 10px;">Nenhum marcador salvo nesta obra ainda.</div>`;
+      } else {
+        list.innerHTML = bms.map(b => `
+          <div class="bm-item">
+            <div class="bm-item-info" onclick="goToBookmark(${b.pagina})">
+              <div class="bm-item-page">Página ${b.pagina}</div>
+              <div class="bm-item-note">${b.nota}</div>
+            </div>
+            <button class="ext-btn" onclick="deleteBookmark(${b.id})">✕</button>
+          </div>
+        `).join('');
+      }
+      document.getElementById('bookmarksModal').classList.add('open');
+    }
+
+    function closeBookmarksModal() {
+      document.getElementById('bookmarksModal').classList.remove('open');
+    }
+
+    function goToBookmark(page) {
+      closeBookmarksModal();
+      jumpToPage(page);
+    }
+
+    async function deleteBookmark(bmId) {
+      if (!activeDoc) return;
+      activeDoc.marcadores = activeDoc.marcadores.filter(b => b.id !== bmId);
+      await saveRecordToDB(activeDoc);
+      updateBookmarksCounter();
+      openBookmarksModal();
+    }
+
+    /* ================= GESTOS: TOQUE IMERSIVO & SWIPE ================= */
     let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
     const canvasAreaEl = document.getElementById('canvasArea');
+
     canvasAreaEl.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchStartTime = Date.now();
+      }
     }, { passive: true });
 
     canvasAreaEl.addEventListener('touchend', (e) => {
+      if (e.changedTouches.length !== 1) return;
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const diffX = endX - touchStartX;
+      const diffY = endY - touchStartY;
+      const elapsed = Date.now() - touchStartTime;
+
+      // Toque rápido e parado no centro alterna Modo Imersivo
+      if (Math.abs(diffX) < 10 && Math.abs(diffY) < 10 && elapsed < 320) {
+        document.getElementById('readerOverlay').classList.toggle('immersive');
+        return;
+      }
+
+      // Swipe horizontal no modo Página Única
       if (readerPrefs.flow === 'single' && readerPrefs.direction === 'horizontal' && zoomMultiplier <= 1.05) {
-        const diffX = e.changedTouches[0].screenX - touchStartX;
         if (diffX < -55) changePage(1);
         if (diffX > 55) changePage(-1);
       }
@@ -1207,8 +1666,8 @@
     function closeIntegratedReader() {
       if (lazyObserver) lazyObserver.disconnect();
       if (activePageObserver) activePageObserver.disconnect();
-      document.getElementById('readerOverlay').classList.remove('open');
-      // Restaura viewport padrão ao sair do leitor
+      releaseScreenWakeLock();
+      document.getElementById('readerOverlay').classList.remove('open', 'immersive');
       document.getElementById('viewportMeta').setAttribute(
         'content',
         'width=device-width, initial-scale=1.0, maximum-scale=5.0'
@@ -1262,10 +1721,12 @@
         ano,
         tipo,
         formato: file.name.split('.').pop().toLowerCase(),
+        tamanhoMB: roundSize(file.size),
         favorito: false,
         progresso: 0,
         paginaAtual: 1,
         totalPaginas: 0,
+        marcadores: [],
         arquivoBlob: file,
         ultimaLeitura: Date.now()
       };
@@ -1275,8 +1736,15 @@
       syncCatalogAndLocal();
     }
 
+    function roundSize(bytes) {
+      return Math.round((bytes / 1048576) * 100) / 100;
+    }
+
     document.getElementById('searchInput').addEventListener('input', renderDocs);
-    document.getElementById('popeFilter').addEventListener('change', renderDocs);
+    document.getElementById('popeFilter').addEventListener('change', () => {
+      syncPopeFilterUI();
+      renderDocs();
+    });
     document.querySelectorAll('.chip[data-filter]').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.chip[data-filter]').forEach(b => b.classList.remove('active'));
