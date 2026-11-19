@@ -2,8 +2,12 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta id="viewportMeta" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta id="viewportMeta" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#6B1D2F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Bibliotheca" />
+  <link id="appleTouchIcon" rel="apple-touch-icon" />
   <link rel="manifest" href="./manifest.json" />
   <title>Bibliotheca Pontificia</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,14 +37,14 @@
       background-color: var(--bg-parchment);
       color: var(--text-ink);
       font-family: 'Inter', sans-serif;
-      padding-bottom: 95px;
+      padding-bottom: calc(95px + env(safe-area-inset-bottom, 0px));
       -webkit-tap-highlight-color: transparent;
     }
 
     header {
       background-color: var(--bordo-primary);
       color: var(--surface-card);
-      padding: 18px 18px 20px;
+      padding: calc(18px + env(safe-area-inset-top, 0px)) 18px 20px;
       border-bottom: 3px solid var(--gold-accent);
       box-shadow: 0 2px 10px rgba(0,0,0,0.12);
     }
@@ -50,6 +54,7 @@
       justify-content: space-between;
       align-items: flex-start;
       margin-bottom: 12px;
+      gap: 8px;
     }
 
     .subtitle {
@@ -69,6 +74,7 @@
     .backup-actions {
       display: flex;
       gap: 6px;
+      flex-shrink: 0;
     }
 
     .icon-header-btn {
@@ -88,22 +94,32 @@
       border: 1px solid var(--gold-accent);
       background: var(--surface-card);
       color: var(--text-ink);
-      font-size: 0.95rem;
+      font-size: 16px; /* Evita zoom automático no iOS Safari ao focar */
       outline: none;
     }
 
     /* Banner Offline */
     .sync-banner {
       background: var(--surface-card);
-      margin: 14px 16px 6px;
-      padding: 12px 14px;
+      margin: 12px 16px 4px;
+      padding: 11px 14px;
       border-radius: var(--radius);
       border: 1px solid var(--gold-subtle);
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
+      transition: padding 0.2s;
     }
+
+    .sync-banner.compact {
+      padding: 7px 14px;
+      background: #F1F8F3;
+      border-color: rgba(46, 111, 64, 0.28);
+    }
+
+    .sync-banner.compact .sync-info span { display: none; }
+    .sync-banner.compact .sync-info strong { color: var(--green-offline); font-size: 0.78rem; }
 
     .sync-info { font-size: 0.82rem; color: var(--text-ink); line-height: 1.35; }
     .sync-info span { display: block; font-size: 0.74rem; color: var(--text-muted); }
@@ -119,7 +135,7 @@
       cursor: pointer;
       white-space: nowrap;
     }
-    .btn-sync:disabled { opacity: 0.65; cursor: not-allowed; }
+    .btn-sync:disabled { opacity: 0.75; cursor: default; padding: 5px 10px; font-size: 0.73rem; }
 
     /* Continuar Lendo */
     .continue-section {
@@ -130,6 +146,7 @@
       display: flex;
       gap: 10px;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       padding-bottom: 6px;
       scrollbar-width: none;
     }
@@ -172,6 +189,7 @@
       gap: 7px;
       padding: 10px 16px 6px;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
     }
     .filters::-webkit-scrollbar { display: none; }
@@ -201,19 +219,22 @@
       gap: 8px;
     }
 
-    .pope-select {
-      flex: 1;
-      min-width: 0;
-      padding: 8px 11px;
+    .pope-select, .sort-select {
+      padding: 8px 10px;
       border-radius: 11px;
       border: 1px solid var(--gold-subtle);
       background-color: var(--surface-card);
       color: var(--text-ink);
       font-family: 'Inter', sans-serif;
       font-size: 0.82rem;
-      font-weight: 500;
       cursor: pointer;
       outline: none;
+    }
+
+    .pope-select {
+      flex: 1;
+      min-width: 0;
+      font-weight: 500;
     }
 
     .pope-select.has-selection {
@@ -226,18 +247,6 @@
     .pope-select option {
       background-color: var(--surface-card);
       color: var(--text-ink);
-    }
-
-    .sort-select {
-      padding: 8px 10px;
-      border-radius: 11px;
-      border: 1px solid var(--gold-subtle);
-      background-color: var(--surface-card);
-      color: var(--text-ink);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
-      cursor: pointer;
-      outline: none;
     }
 
     .clear-pope-btn {
@@ -401,7 +410,7 @@
 
     .fab {
       position: fixed;
-      bottom: 22px;
+      bottom: calc(22px + env(safe-area-inset-bottom, 0px));
       right: 20px;
       background: var(--bordo-primary);
       color: #FFF;
@@ -420,6 +429,8 @@
       display: none;
       position: fixed;
       inset: 0;
+      height: 100vh;
+      height: 100dvh;
       background: #E5DFD3;
       z-index: 200;
       flex-direction: column;
@@ -434,10 +445,27 @@
       display: none !important;
     }
 
+    .immersive-pill {
+      display: none;
+      position: fixed;
+      bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+      right: 16px;
+      background: rgba(35, 31, 32, 0.65);
+      color: #F7F3EA;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 0.72rem;
+      z-index: 210;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .reader-overlay.immersive .immersive-pill { display: block; }
+
     .reader-header {
       background: var(--bordo-primary);
       color: #FFF;
-      padding: 10px 12px;
+      padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -490,13 +518,13 @@
       background: var(--bordo-dark);
       color: #F7F3EA;
       padding: 8px 12px;
-      gap: 7px;
+      gap: 8px;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
       border-bottom: 1px solid var(--gold-accent);
       flex-shrink: 0;
       align-items: center;
-      justify-content: center;
     }
     .reader-settings-bar::-webkit-scrollbar { display: none; }
     .reader-settings-bar.open { display: flex; }
@@ -514,6 +542,7 @@
       display: flex;
       align-items: center;
       gap: 4px;
+      flex-shrink: 0;
     }
 
     .opt-pill.locked-state {
@@ -522,9 +551,27 @@
       font-weight: 600;
     }
 
+    .brightness-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(180, 142, 67, 0.5);
+      padding: 4px 10px;
+      border-radius: 18px;
+      font-size: 0.74rem;
+      flex-shrink: 0;
+    }
+    .brightness-box input[type="range"] {
+      width: 68px;
+      accent-color: var(--gold-accent);
+    }
+
     .reader-canvas-area {
+      --reader-brightness: 1;
       flex: 1;
       overflow: auto;
+      -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
       display: flex;
       padding: 14px 10px;
@@ -545,18 +592,24 @@
       padding: 10px 16px;
     }
 
-    /* Trava inteligente: bloqueia pinça sem impedir pan se houver zoom */
     .reader-canvas-area.zoom-locked {
       touch-action: pan-x pan-y;
     }
 
     .reader-canvas-area.theme-sepia { background: #E9DFC8; }
-    .reader-canvas-area.theme-sepia canvas { filter: sepia(0.32) brightness(0.96) contrast(0.96); }
+    .reader-canvas-area.theme-sepia canvas {
+      filter: sepia(0.32) brightness(calc(0.96 * var(--reader-brightness))) contrast(0.96);
+    }
 
     .reader-canvas-area.theme-night { background: #18181A; }
-    .reader-canvas-area.theme-night canvas { filter: invert(0.88) hue-rotate(180deg); }
+    .reader-canvas-area.theme-night canvas {
+      filter: invert(0.88) hue-rotate(180deg) brightness(var(--reader-brightness));
+    }
 
     .reader-canvas-area.theme-light { background: #DCDCDC; }
+    .reader-canvas-area.theme-light canvas {
+      filter: brightness(var(--reader-brightness));
+    }
 
     .page-wrapper {
       background: #FFF;
@@ -583,7 +636,7 @@
     .reader-footer {
       background: var(--surface-card);
       border-top: 1px solid var(--gold-subtle);
-      padding: 9px 10px;
+      padding: 9px 10px calc(9px + env(safe-area-inset-bottom, 0px));
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -614,10 +667,10 @@
     .page-input {
       width: 44px;
       text-align: center;
-      padding: 5px 2px;
+      padding: 4px 2px;
       border: 1px solid var(--gold-accent);
       border-radius: 6px;
-      font-size: 0.82rem;
+      font-size: 16px;
     }
 
     .zoom-controls { display: flex; gap: 4px; align-items: center; }
@@ -646,7 +699,7 @@
       white-space: nowrap;
     }
 
-    /* Modais (Importação & Marcadores) */
+    /* Modais (Importação & Marcadores/Sumário) */
     .modal {
       display: none;
       position: fixed;
@@ -665,6 +718,7 @@
       max-width: 440px;
       max-height: 82vh;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       border-radius: var(--radius);
       padding: 20px;
       border: 1px solid var(--gold-accent);
@@ -676,6 +730,31 @@
       margin-bottom: 12px;
     }
 
+    .modal-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--gold-subtle);
+      padding-bottom: 8px;
+    }
+
+    .modal-tab {
+      flex: 1;
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--gold-subtle);
+      background: #FFF;
+      color: var(--text-ink);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .modal-tab.active {
+      background: var(--bordo-primary);
+      color: #FFF;
+      border-color: var(--bordo-primary);
+    }
+
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
     .form-group input, .form-group select {
@@ -684,7 +763,7 @@
       border-radius: 8px;
       border: 1px solid #D5CBB8;
       background: #FFF;
-      font-size: 0.9rem;
+      font-size: 16px;
     }
 
     .modal-actions {
@@ -725,13 +804,13 @@
       <div class="backup-actions">
         <button class="icon-header-btn" title="Exportar backup de progresso" onclick="exportBackup()">↓ Backup</button>
         <button class="icon-header-btn" title="Restaurar backup" onclick="document.getElementById('backupFileInput').click()">↑ Restaurar</button>
-        <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="importBackup(event)" />
+        <input type="file" id="backupFileInput" accept=".json,application/json" style="display:none" onchange="importBackup(event)" />
       </div>
     </div>
     <input type="text" id="searchInput" class="search-box" placeholder="Buscar por título, Papa ou ano..." />
   </header>
 
-  <div class="sync-banner">
+  <div class="sync-banner" id="syncBanner">
     <div class="sync-info">
       <strong id="offlineCount">0 de 0 documentos offline</strong>
       <span id="syncStatus">Carregando acervo...</span>
@@ -791,7 +870,7 @@
       <div class="reader-tools">
         <button class="tool-btn" title="Marcar página atual" onclick="addBookmarkPrompt()">+ 🔖</button>
         <button class="tool-btn" id="settingsToggleBtn" onclick="toggleSettingsBar()">⚙</button>
-        <button class="tool-btn" title="Abrir em leitor externo" onclick="openCurrentExternally()">↗</button>
+        <button class="tool-btn" title="Compartilhar / Abrir externo" onclick="openCurrentExternally()">↗</button>
       </div>
     </div>
 
@@ -800,9 +879,14 @@
       <button class="opt-pill" id="dirToggleBtn" onclick="toggleDirectionMode()">↕ Vertical</button>
       <button class="opt-pill" id="lockToggleBtn" onclick="toggleZoomLock()">🔓 Zoom Livre</button>
       <button class="opt-pill" id="themeToggleBtn" onclick="cycleReaderTheme()">🎨 Sépia</button>
+      <div class="brightness-box" title="Brilho da página">
+        <span>☀</span>
+        <input type="range" id="brightnessSlider" min="0.55" max="1.15" step="0.05" value="1" oninput="updateBrightness(this.value)" />
+      </div>
     </div>
 
     <div class="reader-canvas-area theme-sepia dir-vertical" id="canvasArea"></div>
+    <div class="immersive-pill" id="immersivePill">1 / 1</div>
 
     <div class="reader-footer">
       <button class="nav-page-btn" id="prevPageBtn" onclick="changePage(-1)">◀</button>
@@ -824,14 +908,17 @@
     </div>
   </div>
 
-  <!-- Modal de Marcadores da Obra -->
+  <!-- Modal de Marcadores & Sumário Interno -->
   <div class="modal" id="bookmarksModal">
     <div class="modal-content">
-      <h2>Marcadores Salvos</h2>
+      <div class="modal-tabs">
+        <button class="modal-tab active" id="tabUserBookmarks" onclick="switchBookmarkTab('user')">Marcadores Salvos</button>
+        <button class="modal-tab" id="tabPdfOutline" onclick="switchBookmarkTab('outline')">Sumário da Obra</button>
+      </div>
       <div id="bookmarksList"></div>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeBookmarksModal()">Fechar</button>
-        <button class="btn btn-primary" onclick="closeBookmarksModal(); addBookmarkPrompt();">+ Marcar Pág. Atual</button>
+        <button class="btn btn-primary" id="addBmModalBtn" onclick="closeBookmarksModal(); addBookmarkPrompt();">+ Marcar Pág. Atual</button>
       </div>
     </div>
   </div>
@@ -842,7 +929,7 @@
       <h2>Importar Documento Pessoal</h2>
       <div class="form-group">
         <label>Arquivo (PDF ou EPUB)</label>
-        <input type="file" id="fileInput" accept=".pdf,.epub" />
+        <input type="file" id="fileInput" accept=".pdf,.epub,application/pdf,application/epub+zip" />
       </div>
       <div class="form-group">
         <label>Título</label>
@@ -878,6 +965,32 @@
   </div>
 
   <script>
+    // Gera ícone PNG em memória para iOS Safari ("Adicionar à Tela de Início")
+    (function generateAppleTouchIcon() {
+      try {
+        const c = document.createElement('canvas');
+        c.width = 180; c.height = 180;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#6B1D2F';
+        ctx.fillRect(0, 0, 180, 180);
+        ctx.strokeStyle = '#B48E43';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(10, 10, 160, 160);
+        ctx.strokeStyle = '#F7F3EA';
+        ctx.lineWidth = 14;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(90, 38); ctx.lineTo(90, 142);
+        ctx.moveTo(58, 72); ctx.lineTo(122, 72);
+        ctx.stroke();
+        ctx.fillStyle = '#B48E43';
+        ctx.beginPath();
+        ctx.arc(90, 72, 7, 0, Math.PI * 2);
+        ctx.fill();
+        document.getElementById('appleTouchIcon').href = c.toDataURL('image/png');
+      } catch (e) {}
+    })();
+
     if (window.pdfjsLib) {
       pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     }
@@ -895,7 +1008,8 @@
       themeIdx: savedPrefs.themeIdx ?? 0,
       flow: savedPrefs.flow || 'continuous',
       direction: savedPrefs.direction || 'vertical',
-      locked: savedPrefs.locked ?? false
+      locked: savedPrefs.locked ?? false,
+      brightness: savedPrefs.brightness ?? 1.0
     };
 
     const themes = ['theme-sepia', 'theme-night', 'theme-light'];
@@ -903,6 +1017,8 @@
 
     let activeDoc = null;
     let pdfInstance = null;
+    let pdfOutlineItems = [];
+    let currentBookmarkTab = 'user';
     let currentPage = 1;
     let zoomMultiplier = 1.0;
     let renderGeneration = 0;
@@ -910,6 +1026,13 @@
     let activePageObserver = null;
     let saveProgressTimer = null;
     let wakeLockSentinel = null;
+
+    function normalizeText(str) {
+      return String(str || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+    }
 
     const request = indexedDB.open('BibliothecaDB', 2);
     request.onupgradeneeded = (e) => {
@@ -925,13 +1048,17 @@
 
     async function syncCatalogAndLocal() {
       let nativeCatalog = [];
+      let catalogFetched = false;
       try {
         const res = await fetch('./catalogo.json', { cache: 'no-store' });
-        if (res.ok) nativeCatalog = await res.json();
+        if (res.ok) {
+          nativeCatalog = await res.json();
+          catalogFetched = true;
+        }
       } catch (err) {}
 
       const tx = db.transaction('documentos', 'readonly');
-      tx.objectStore('documentos').getAll().onsuccess = (e) => {
+      tx.objectStore('documentos').getAll().onsuccess = async (e) => {
         const localRecords = e.target.result;
         const localMap = new Map(localRecords.map(item => [item.id, item]));
 
@@ -951,13 +1078,25 @@
           };
         });
 
-        localMap.forEach(manualDoc => {
-          combined.push({
-            ...manualDoc,
-            marcadores: manualDoc.marcadores || [],
-            isNative: false
-          });
+        // Remove registros nativos órfãos (caso um PDF tenha sido renomeado/removido no PC)
+        const orphanIds = [];
+        localMap.forEach((doc, id) => {
+          if (catalogFetched && id.startsWith('nativo-')) {
+            orphanIds.push(id);
+          } else {
+            combined.push({
+              ...doc,
+              marcadores: doc.marcadores || [],
+              isNative: id.startsWith('nativo-')
+            });
+          }
         });
+
+        if (orphanIds.length > 0) {
+          const delTx = db.transaction('documentos', 'readwrite');
+          const store = delTx.objectStore('documentos');
+          orphanIds.forEach(oid => store.delete(oid));
+        }
 
         mergedDocs = combined;
         updateStats();
@@ -975,16 +1114,20 @@
       const offlineMB = offlineDocs.reduce((acc, d) => acc + (d.tamanhoMB || (d.arquivoBlob ? d.arquivoBlob.size / 1048576 : 0)), 0);
       const pendingMB = pendingDocs.reduce((acc, d) => acc + (d.tamanhoMB || 0), 0);
 
+      const banner = document.getElementById('syncBanner');
+      const btnAll = document.getElementById('downloadAllBtn');
+
       document.getElementById('offlineCount').textContent = `${offlineDocs.length} de ${total} offline (${offlineMB.toFixed(1)} MB)`;
       document.getElementById('syncStatus').textContent = pendingDocs.length > 0
         ? `${pendingDocs.length} pendentes (${pendingMB.toFixed(1)} MB)`
         : 'Todo o acervo disponível sem internet';
 
-      const btnAll = document.getElementById('downloadAllBtn');
       if (total > 0 && pendingDocs.length === 0) {
+        banner.classList.add('compact');
         btnAll.textContent = '✓ 100% Offline';
         btnAll.disabled = true;
       } else {
+        banner.classList.remove('compact');
         btnAll.textContent = pendingMB > 0 ? `↓ Baixar (${pendingMB.toFixed(1)} MB)` : '↓ Baixar acervo';
         btnAll.disabled = false;
       }
@@ -1052,14 +1195,15 @@
     }
 
     function renderDocs() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
+      const query = normalizeText(document.getElementById('searchInput').value);
       const selectedPope = document.getElementById('popeFilter').value;
       const sortBy = document.getElementById('sortSelect').value;
       const container = document.getElementById('docList');
 
       let filtered = mergedDocs.filter(doc => {
-        const matchesQuery = doc.titulo.toLowerCase().includes(query) ||
-                             doc.papa.toLowerCase().includes(query) ||
+        const matchesQuery = !query ||
+                             normalizeText(doc.titulo).includes(query) ||
+                             normalizeText(doc.papa).includes(query) ||
                              String(doc.ano).includes(query);
         const matchesPope = !selectedPope || doc.papa === selectedPope;
         const matchesChip = currentFilter === 'todos' ||
@@ -1073,7 +1217,6 @@
         if (sortBy === 'ano-desc') return (b.ano || 0) - (a.ano || 0) || a.titulo.localeCompare(b.titulo, 'pt-BR');
         if (sortBy === 'az') return a.titulo.localeCompare(b.titulo, 'pt-BR');
         if (sortBy === 'recentes') return (b.ultimaLeitura || 0) - (a.ultimaLeitura || 0);
-        // Padrão: ano-asc
         const aNoYear = !a.ano;
         const bNoYear = !b.ano;
         if (aNoYear !== bNoYear) return aNoYear ? 1 : -1;
@@ -1105,7 +1248,7 @@
               <button class="dl-btn ${isOffline ? 'saved' : ''}" id="btn-dl-${doc.id}" onclick="handleOfflineAction('${doc.id}')">
                 ${isOffline ? '✓ Offline' : '↓ Baixar'}
               </button>
-              <button class="ext-btn" title="Abrir em leitor externo" onclick="openExternalReader('${doc.id}')">↗</button>
+              <button class="ext-btn" title="Compartilhar / Abrir externo" onclick="openExternalReader('${doc.id}')">↗</button>
               <button class="fav-btn" onclick="toggleFavorite('${doc.id}')">
                 ${doc.favorito ? '★' : '☆'}
               </button>
@@ -1288,6 +1431,12 @@
       localStorage.setItem('bibliotheca_reader_prefs', JSON.stringify(readerPrefs));
     }
 
+    function updateBrightness(val) {
+      readerPrefs.brightness = parseFloat(val);
+      document.getElementById('canvasArea').style.setProperty('--reader-brightness', readerPrefs.brightness);
+      saveReaderPrefs();
+    }
+
     function applyReaderPreferencesUI() {
       const area = document.getElementById('canvasArea');
       const vpMeta = document.getElementById('viewportMeta');
@@ -1296,6 +1445,9 @@
       const activeTheme = themes[readerPrefs.themeIdx];
       area.classList.add(activeTheme);
       document.getElementById('themeToggleBtn').textContent = themeLabels[activeTheme];
+
+      area.style.setProperty('--reader-brightness', readerPrefs.brightness);
+      document.getElementById('brightnessSlider').value = readerPrefs.brightness;
 
       area.classList.remove('dir-vertical', 'dir-horizontal');
       area.classList.add(readerPrefs.direction === 'horizontal' ? 'dir-horizontal' : 'dir-vertical');
@@ -1315,14 +1467,14 @@
         lockBtn.classList.add('locked-state');
         zoomIn.disabled = true;
         zoomOut.disabled = true;
-        vpMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        vpMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
       } else {
         area.classList.remove('zoom-locked');
         lockBtn.textContent = '🔓 Zoom Livre';
         lockBtn.classList.remove('locked-state');
         zoomIn.disabled = false;
         zoomOut.disabled = false;
-        vpMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes');
+        vpMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover');
       }
     }
 
@@ -1357,7 +1509,7 @@
       applyReaderPreferencesUI();
     }
 
-    /* ================= MOTOR DE RENDERIZAÇÃO DO LEITOR ================= */
+    /* ================= MOTOR DE RENDERIZAÇÃO & GESTÃO DE MEMÓRIA ================= */
     async function openIntegratedReader(id) {
       const doc = mergedDocs.find(d => d.id === id);
       if (!doc) return;
@@ -1387,6 +1539,7 @@
 
       const arrayBuffer = await doc.arquivoBlob.arrayBuffer();
       pdfInstance = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      await loadPdfOutline(pdfInstance);
 
       doc.totalPaginas = pdfInstance.numPages;
       currentPage = Math.min(Math.max(1, doc.paginaAtual || 1), pdfInstance.numPages);
@@ -1395,6 +1548,39 @@
       document.getElementById('pageInput').max = pdfInstance.numPages;
 
       await rebuildReaderViewport(currentPage);
+    }
+
+    async function loadPdfOutline(pdf) {
+      pdfOutlineItems = [];
+      try {
+        const rawOutline = await pdf.getOutline();
+        if (!rawOutline || !rawOutline.length) return;
+
+        async function flatten(items, level = 0) {
+          for (const item of items) {
+            let pageNum = null;
+            try {
+              let dest = item.dest;
+              if (typeof dest === 'string') {
+                dest = await pdf.getDestination(dest);
+              }
+              if (Array.isArray(dest) && dest[0]) {
+                const idx = await pdf.getPageIndex(dest[0]);
+                pageNum = idx + 1;
+              }
+            } catch (e) {}
+            pdfOutlineItems.push({
+              title: item.title || 'Seção',
+              page: pageNum,
+              level: Math.min(level, 3)
+            });
+            if (item.items && item.items.length > 0) {
+              await flatten(item.items, level + 1);
+            }
+          }
+        }
+        await flatten(rawOutline);
+      } catch (e) {}
     }
 
     async function rebuildReaderViewport(targetPage) {
@@ -1407,6 +1593,7 @@
       if (activePageObserver) activePageObserver.disconnect();
 
       const area = document.getElementById('canvasArea');
+      area.querySelectorAll('canvas').forEach(c => { c.width = 0; c.height = 0; });
       area.innerHTML = '';
 
       const samplePage = await pdfInstance.getPage(targetPage);
@@ -1433,17 +1620,26 @@
           area.appendChild(createPageWrapper(p, estWidth, estHeight));
         }
 
+        // Renderiza páginas próximas e descarrega páginas distantes para economizar RAM (vital no iOS Safari)
         lazyObserver = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
+            const pNum = parseInt(entry.target.dataset.page);
             if (entry.isIntersecting) {
-              const pNum = parseInt(entry.target.dataset.page);
               if (!entry.target.dataset.rendered) {
                 entry.target.dataset.rendered = 'true';
                 renderPageIntoWrapper(pNum, entry.target, finalScale, currentGen);
               }
+            } else if (entry.target.dataset.rendered === 'true') {
+              const oldCanvas = entry.target.querySelector('canvas');
+              if (oldCanvas) {
+                oldCanvas.width = 0;
+                oldCanvas.height = 0;
+              }
+              entry.target.innerHTML = `<span class="page-placeholder-label">Página ${pNum}</span>`;
+              entry.target.dataset.rendered = '';
             }
           });
-        }, { root: area, rootMargin: '700px' });
+        }, { root: area, rootMargin: '1100px' });
 
         activePageObserver = new IntersectionObserver((entries) => {
           let bestPage = null;
@@ -1483,7 +1679,7 @@
       if (gen !== renderGeneration || !pdfInstance) return;
       try {
         const page = await pdfInstance.getPage(pageNum);
-        if (gen !== renderGeneration) return;
+        if (gen !== renderGeneration || wrapper.dataset.rendered !== 'true') return;
 
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         const viewport = page.getViewport({ scale: scale * dpr });
@@ -1500,7 +1696,11 @@
         const ctx = canvas.getContext('2d');
         await page.render({ canvasContext: ctx, viewport }).promise;
 
-        if (gen !== renderGeneration) return;
+        if (gen !== renderGeneration || wrapper.dataset.rendered !== 'true') {
+          canvas.width = 0;
+          canvas.height = 0;
+          return;
+        }
         wrapper.innerHTML = '';
         wrapper.appendChild(canvas);
       } catch (e) {
@@ -1519,6 +1719,7 @@
       if (!pdfInstance || !activeDoc) return;
       currentPage = num;
       document.getElementById('pageInput').value = num;
+      document.getElementById('immersivePill').textContent = `${num} / ${pdfInstance.numPages}`;
       document.getElementById('prevPageBtn').disabled = num <= 1;
       document.getElementById('nextPageBtn').disabled = num >= pdfInstance.numPages;
 
@@ -1569,7 +1770,7 @@
       rebuildReaderViewport(currentPage);
     }
 
-    /* ================= MARCADORES DE PÁGINA ================= */
+    /* ================= MARCADORES & SUMÁRIO INTERNO ================= */
     function updateBookmarksCounter() {
       const count = activeDoc && activeDoc.marcadores ? activeDoc.marcadores.length : 0;
       document.getElementById('openBookmarksBtn').textContent = `🔖 ${count}`;
@@ -1590,11 +1791,41 @@
       updateBookmarksCounter();
     }
 
+    function switchBookmarkTab(tab) {
+      currentBookmarkTab = tab;
+      document.getElementById('tabUserBookmarks').classList.toggle('active', tab === 'user');
+      document.getElementById('tabPdfOutline').classList.toggle('active', tab === 'outline');
+      document.getElementById('addBmModalBtn').style.display = tab === 'user' ? 'inline-block' : 'none';
+      renderBookmarksModalContent();
+    }
+
     function openBookmarksModal() {
       if (!activeDoc) return;
-      const list = document.getElementById('bookmarksList');
-      const bms = activeDoc.marcadores || [];
+      currentBookmarkTab = 'user';
+      switchBookmarkTab('user');
+      document.getElementById('bookmarksModal').classList.add('open');
+    }
 
+    function renderBookmarksModalContent() {
+      const list = document.getElementById('bookmarksList');
+
+      if (currentBookmarkTab === 'outline') {
+        if (!pdfOutlineItems.length) {
+          list.innerHTML = `<div class="empty-state" style="padding:20px 10px;">Este PDF não possui sumário interno embutido.</div>`;
+          return;
+        }
+        list.innerHTML = pdfOutlineItems.map(item => `
+          <div class="bm-item" style="margin-left: ${item.level * 12}px;">
+            <div class="bm-item-info" onclick="${item.page ? `goToBookmark(${item.page})` : ''}">
+              <div class="bm-item-note" style="font-weight:500;">${item.title}</div>
+              ${item.page ? `<div class="bm-item-page">Página ${item.page}</div>` : ''}
+            </div>
+          </div>
+        `).join('');
+        return;
+      }
+
+      const bms = activeDoc.marcadores || [];
       if (bms.length === 0) {
         list.innerHTML = `<div class="empty-state" style="padding:20px 10px;">Nenhum marcador salvo nesta obra ainda.</div>`;
       } else {
@@ -1608,7 +1839,6 @@
           </div>
         `).join('');
       }
-      document.getElementById('bookmarksModal').classList.add('open');
     }
 
     function closeBookmarksModal() {
@@ -1625,7 +1855,7 @@
       activeDoc.marcadores = activeDoc.marcadores.filter(b => b.id !== bmId);
       await saveRecordToDB(activeDoc);
       updateBookmarksCounter();
-      openBookmarksModal();
+      renderBookmarksModalContent();
     }
 
     /* ================= GESTOS: TOQUE IMERSIVO & SWIPE ================= */
@@ -1650,13 +1880,11 @@
       const diffY = endY - touchStartY;
       const elapsed = Date.now() - touchStartTime;
 
-      // Toque rápido e parado no centro alterna Modo Imersivo
       if (Math.abs(diffX) < 10 && Math.abs(diffY) < 10 && elapsed < 320) {
         document.getElementById('readerOverlay').classList.toggle('immersive');
         return;
       }
 
-      // Swipe horizontal no modo Página Única
       if (readerPrefs.flow === 'single' && readerPrefs.direction === 'horizontal' && zoomMultiplier <= 1.05) {
         if (diffX < -55) changePage(1);
         if (diffX > 55) changePage(-1);
@@ -1667,16 +1895,21 @@
       if (lazyObserver) lazyObserver.disconnect();
       if (activePageObserver) activePageObserver.disconnect();
       releaseScreenWakeLock();
+
+      const area = document.getElementById('canvasArea');
+      area.querySelectorAll('canvas').forEach(c => { c.width = 0; c.height = 0; });
+      area.innerHTML = '';
+
       document.getElementById('readerOverlay').classList.remove('open', 'immersive');
       document.getElementById('viewportMeta').setAttribute(
         'content',
-        'width=device-width, initial-scale=1.0, maximum-scale=5.0'
+        'width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover'
       );
       pdfInstance = null;
       activeDoc = null;
     }
 
-    /* ================= LEITOR EXTERNO ================= */
+    /* ================= COMPARTILHAMENTO / LEITOR EXTERNO ================= */
     async function openExternalReader(id) {
       const doc = mergedDocs.find(d => d.id === id);
       if (!doc) return;
@@ -1684,9 +1917,30 @@
       if (!doc.arquivoBlob && doc.arquivo) {
         await downloadSingleDoc(id);
       }
-      if (doc.arquivoBlob) {
-        const fileURL = URL.createObjectURL(doc.arquivoBlob);
-        window.open(fileURL, '_blank');
+      if (!doc.arquivoBlob) return;
+
+      const ext = doc.formato || 'pdf';
+      const mime = ext === 'epub' ? 'application/epub+zip' : 'application/pdf';
+      const fileName = `${doc.titulo}.${ext}`;
+      const fileObj = new File([doc.arquivoBlob], fileName, { type: mime });
+
+      // Share Sheet nativo (funciona no iOS Safari e Android Chrome)
+      if (navigator.canShare && navigator.canShare({ files: [fileObj] })) {
+        try {
+          await navigator.share({ files: [fileObj], title: doc.titulo });
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+        }
+      }
+
+      const fileURL = URL.createObjectURL(doc.arquivoBlob);
+      const win = window.open(fileURL, '_blank');
+      if (!win) {
+        const a = document.createElement('a');
+        a.href = fileURL;
+        a.download = fileName;
+        a.click();
       }
     }
 

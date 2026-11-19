@@ -4,7 +4,6 @@
   "description": "Hub pessoal offline-first para leitura de Encíclicas e Bulas Papais.",
   "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "portrait-primary",
   "background_color": "#F7F3EA",
   "theme_color": "#6B1D2F",
   "icons": [

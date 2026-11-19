@@ -1,5 +1,5 @@
-const CACHE_NAME = 'bibliotheca-v4';
-const ASSETS = [
+const CACHE_NAME = 'bibliotheca-v5';
+const CORE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
@@ -10,7 +10,7 @@ const ASSETS = [
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS))
   );
   self.skipWaiting();
 });
@@ -25,18 +25,30 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  if (e.request.url.includes('cdnjs.cloudflare.com') || e.request.url.includes('fonts.')) {
+  const url = new URL(e.request.url);
+
+  // Não duplica PDFs/EPUBs no Cache Storage (gerenciados exclusivamente pelo IndexedDB)
+  if (url.pathname.includes('/acervo/') || /\.(pdf|epub)$/i.test(url.pathname)) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
+
+  // Bibliotecas externas: Cache-First
+  if (url.hostname.includes('cdnjs.cloudflare.com') || url.hostname.includes('fonts.')) {
     e.respondWith(
       caches.match(e.request).then((cached) => cached || fetch(e.request))
     );
     return;
   }
 
+  // Arquivos principais e catalogo.json: Network-First com fallback offline
   e.respondWith(
     fetch(e.request)
       .then((res) => {
-        const resClone = res.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(e.request, resClone));
+        if (res && res.status === 200 && e.request.method === 'GET') {
+          const resClone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, resClone));
+        }
         return res;
       })
       .catch(() => caches.match(e.request))
