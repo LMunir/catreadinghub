@@ -43,25 +43,25 @@ def extrair_metadados(caminho: Path) -> dict:
     partes = [p.strip() for p in re.split(r"\s+-\s+", nome_limpo) if p.strip()]
 
     papa = "Desconhecido"
-    ano = 0
     titulo = nome_limpo
+    ano = 0
 
-    # Padrão 1: Papa - Ano - Título (Ex: Leão XIII - 1891 - Rerum Novarum)
-    if len(partes) >= 3 and re.fullmatch(r"\d{3,4}", partes[1]):
+    # Padrão 1: Autor - Título - Ano (Ex: Leão XIII - Rerum Novarum - 1891)
+    if len(partes) >= 3 and re.fullmatch(r"\d{3,4}", partes[-1]):
         papa = partes[0]
-        ano = int(partes[1])
-        titulo = " - ".join(partes[2:])
+        ano = int(partes[-1])
+        titulo = " - ".join(partes[1:-1])
 
-    # Padrão 2: Papa - Título (Ex: Pio XI - Quadragesimo Anno)
+    # Padrão 2: Autor - Título (sem ano) OU Título - Ano (sem autor)
     elif len(partes) == 2:
-        if re.fullmatch(r"\d{3,4}", partes[0]):
-            ano = int(partes[0])
-            titulo = partes[1]
+        if re.fullmatch(r"\d{3,4}", partes[1]):
+            titulo = partes[0]
+            ano = int(partes[1])
         else:
             papa = partes[0]
             titulo = partes[1]
 
-    # Padrão 3: Nome livre (tenta capturar algum ano solto no nome, ex: "Rerum Novarum (1891)")
+    # Padrão 3: Apenas Título (tenta capturar ano solto, ex: "Rerum Novarum (1891)")
     else:
         match_ano = re.search(r"\b(\d{4})\b", nome_limpo)
         if match_ano:
@@ -71,13 +71,12 @@ def extrair_metadados(caminho: Path) -> dict:
             titulo = nome_limpo.replace("_", " ").strip()
 
     return {
-        "id": gerar_slug(f"{papa}-{ano}-{titulo}" if ano else titulo),
+        "id": gerar_slug(f"{papa}-{titulo}-{ano}" if ano else f"{papa}-{titulo}"),
         "titulo": titulo,
         "papa": papa,
         "ano": ano,
         "tipo": tipo,
         "formato": formato,
-        # .as_posix() garante barras "/" mesmo rodando no Windows
         "arquivo": caminho.as_posix(),
     }
 
