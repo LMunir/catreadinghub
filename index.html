@@ -438,10 +438,37 @@
     }
     .reader-overlay.open { display: flex; }
 
-    .reader-overlay.immersive .reader-header,
-    .reader-overlay.immersive .reader-settings-bar,
-    .reader-overlay.immersive .reader-footer {
+    /* No modo imersivo, oculta as barras apenas quando hud-visible NÃO está ativo */
+    .reader-overlay.immersive:not(.hud-visible) .reader-header,
+    .reader-overlay.immersive:not(.hud-visible) .reader-settings-bar,
+    .reader-overlay.immersive:not(.hud-visible) .reader-footer {
       display: none !important;
+    }
+
+    /* Quando hud-visible está ativo dentro do modo imersivo, os controles flutuam sem redimensionar a página */
+    .reader-overlay.immersive.hud-visible .reader-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 220;
+    }
+
+    .reader-overlay.immersive.hud-visible .reader-settings-bar {
+      position: fixed;
+      top: calc(44px + env(safe-area-inset-top, 0px));
+      left: 0;
+      right: 0;
+      z-index: 220;
+      display: flex;
+    }
+
+    .reader-overlay.immersive.hud-visible .reader-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 220;
     }
 
     .immersive-pill {
@@ -459,7 +486,7 @@
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
     }
-    .reader-overlay.immersive .immersive-pill { display: block; }
+    .reader-overlay.immersive:not(.hud-visible) .immersive-pill { display: block; }
 
     .reader-header {
       background: var(--bordo-primary);
@@ -510,6 +537,13 @@
       font-size: 0.78rem;
       cursor: pointer;
       white-space: nowrap;
+    }
+
+    .tool-btn.active-tool {
+      background: var(--gold-accent);
+      color: #231F20;
+      border-color: var(--gold-accent);
+      font-weight: 700;
     }
 
     .reader-settings-bar {
@@ -590,6 +624,17 @@
     .reader-canvas-area.dir-vertical {
       flex-direction: column;
       align-items: flex-start;
+    }
+
+    .reader-canvas-area.dir-vertical.no-h-scroll,
+    .reader-canvas-area.dir-vertical.zoom-locked {
+      overflow-x: hidden !important;
+      touch-action: pan-y !important;
+    }
+
+    .reader-canvas-area.dir-horizontal.zoom-locked {
+      overflow-y: hidden !important;
+      touch-action: pan-x !important;
     }
 
     .reader-canvas-area.dir-vertical .page-wrapper {
@@ -736,6 +781,9 @@
       .reader-header {
         padding-top: 5px;
         padding-bottom: 5px;
+      }
+      .reader-overlay.immersive.hud-visible .reader-settings-bar {
+        top: calc(34px + env(safe-area-inset-top, 0px));
       }
       .reader-title {
         font-size: 1rem;
@@ -926,7 +974,7 @@
       <button class="reader-back" onclick="closeIntegratedReader()">← Voltar</button>
       <div class="reader-title" id="readerTitle">Documento</div>
       <div class="reader-tools">
-        <button class="tool-btn" title="Tela cheia sem barras do celular" onclick="setImmersiveMode(true)">⛶</button>
+        <button class="tool-btn" id="immersiveBtn" title="Alternar modo imersivo (tela cheia)" onclick="toggleImmersiveButton()">⛶</button>
         <button class="tool-btn" title="Marcar página atual" onclick="addBookmarkPrompt()">+ 🔖</button>
         <button class="tool-btn" id="settingsToggleBtn" onclick="toggleSettingsBar()">⚙</button>
         <button class="tool-btn" title="Compartilhar / Abrir externo" onclick="openCurrentExternally()">↗</button>
@@ -1090,6 +1138,7 @@
     let isProgrammaticScroll = false;
     let lastKnownCanvasWidth = 0;
     let resizeDebounceTimer = null;
+    let wasNativeFullscreen = false;
 
     function normalizeText(str) {
       return String(str || '')
@@ -1467,7 +1516,7 @@
       reader.readAsText(file);
     }
 
-    /* ================= WAKE LOCK & TELA CHEIA NATIVA ================= */
+    /* ================= WAKE LOCK & MODO IMERSIVO (TELA CHEIA) ================= */
     async function requestScreenWakeLock() {
       try {
         if ('wakeLock' in navigator) {
@@ -1505,40 +1554,57 @@
       } catch (e) {}
     }
 
-    function setImmersiveMode(enable) {
+    function syncImmersiveButtonUI() {
+      const overlay = document.getElementById('readerOverlay');
+      const btn = document.getElementById('immersiveBtn');
+      if (!overlay || !btn) return;
+      const isImm = overlay.classList.contains('immersive');
+      btn.classList.toggle('active-tool', isImm);
+      btn.title = isImm ? 'Sair do modo imersivo' : 'Entrar no modo imersivo (tela cheia)';
+    }
+
+    function enterImmersiveMode() {
       const overlay = document.getElementById('readerOverlay');
       if (!overlay) return;
-      if (enable) {
-        overlay.classList.add('immersive');
-        document.getElementById('readerSettingsBar').classList.remove('open');
-        enterSystemFullscreen();
-      } else {
-        overlay.classList.remove('immersive');
-        exitSystemFullscreen();
-      }
+      overlay.classList.add('immersive');
+      overlay.classList.remove('hud-visible');
+      document.getElementById('readerSettingsBar').classList.remove('open');
+      syncImmersiveButtonUI();
+      enterSystemFullscreen();
       setTimeout(handleOrientationOrResize, 160);
     }
 
-    function toggleImmersiveMode() {
+    function exitImmersiveMode() {
       const overlay = document.getElementById('readerOverlay');
-      const isImmersive = overlay.classList.contains('immersive');
-      const isNativeFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      if (!overlay) return;
+      overlay.classList.remove('immersive', 'hud-visible');
+      document.getElementById('readerSettingsBar').classList.remove('open');
+      syncImmersiveButtonUI();
+      exitSystemFullscreen();
+      setTimeout(handleOrientationOrResize, 160);
+    }
 
-      // Se entrou no modo imersivo apenas rolando a página (sem tela cheia nativa), um toque ativa a tela cheia real do sistema
-      if (isImmersive && !isNativeFs) {
-        setImmersiveMode(true);
+    function toggleImmersiveButton() {
+      const overlay = document.getElementById('readerOverlay');
+      if (overlay.classList.contains('immersive')) {
+        exitImmersiveMode();
       } else {
-        setImmersiveMode(!isImmersive);
+        enterImmersiveMode();
       }
     }
 
     function handleFullscreenChange() {
       const isNativeFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
-      const overlay = document.getElementById('readerOverlay');
-      if (!overlay || !overlay.classList.contains('open')) return;
-
-      if (!isNativeFs && overlay.classList.contains('immersive')) {
-        overlay.classList.remove('immersive');
+      if (isNativeFs) {
+        wasNativeFullscreen = true;
+      } else if (wasNativeFullscreen) {
+        wasNativeFullscreen = false;
+        const overlay = document.getElementById('readerOverlay');
+        if (overlay && overlay.classList.contains('immersive')) {
+          overlay.classList.remove('immersive', 'hud-visible');
+          document.getElementById('readerSettingsBar').classList.remove('open');
+          syncImmersiveButtonUI();
+        }
       }
       setTimeout(handleOrientationOrResize, 160);
     }
@@ -1577,7 +1643,7 @@
       area.style.setProperty('--reader-brightness', readerPrefs.brightness);
       document.getElementById('brightnessSlider').value = readerPrefs.brightness;
 
-      area.classList.remove('dir-vertical', 'dir-horizontal', 'snap-enabled', 'zoomed-in');
+      area.classList.remove('dir-vertical', 'dir-horizontal', 'snap-enabled', 'zoomed-in', 'no-h-scroll', 'zoom-locked');
       if (readerPrefs.direction === 'horizontal') {
         area.classList.add('dir-horizontal');
         if (zoomMultiplier <= 1.02) {
@@ -1588,6 +1654,9 @@
         document.getElementById('dirToggleBtn').textContent = '↔ Paginado Lateral';
       } else {
         area.classList.add('dir-vertical');
+        if (zoomMultiplier <= 1.02) {
+          area.classList.add('no-h-scroll');
+        }
         document.getElementById('dirToggleBtn').textContent = '↕ Rolagem Vertical';
       }
 
@@ -1614,6 +1683,10 @@
       zoomReset.textContent = `${effectivePct}%`;
 
       if (readerPrefs.locked) {
+        area.classList.add('zoom-locked');
+        if (readerPrefs.direction === 'vertical') {
+          area.scrollLeft = 0;
+        }
         lockBtn.textContent = '🔒 Zoom Travado';
         lockBtn.classList.add('locked-state');
         zoomIn.disabled = true;
@@ -1624,6 +1697,8 @@
         zoomIn.disabled = false;
         zoomOut.disabled = false;
       }
+
+      syncImmersiveButtonUI();
     }
 
     function toggleSettingsBar() {
@@ -1693,9 +1768,10 @@
       activeDoc = doc;
       if (!activeDoc.marcadores) activeDoc.marcadores = [];
       zoomMultiplier = 1.0;
+      lastScrollTop = 0;
 
       const overlay = document.getElementById('readerOverlay');
-      overlay.classList.remove('immersive');
+      overlay.classList.remove('immersive', 'hud-visible');
       overlay.classList.add('open');
 
       document.getElementById('readerTitle').textContent = doc.titulo;
@@ -1755,6 +1831,7 @@
       renderGeneration++;
       const currentGen = renderGeneration;
       isProgrammaticScroll = true;
+      lastScrollTop = 0;
 
       if (lazyObserver) lazyObserver.disconnect();
       if (activePageObserver) activePageObserver.disconnect();
@@ -1791,6 +1868,7 @@
 
       if (readerPrefs.flow === 'single') {
         const wrapper = createPageWrapper(targetPage, wrapperWidth, estHeight);
+        wrapper.dataset.rendered = 'true';
         area.appendChild(wrapper);
         await renderPageIntoWrapper(targetPage, wrapper, finalScale, currentGen, cropToAvail ? availWidth : null);
         area.scrollTo({ top: Math.round(estHeight * relativeRatio), left: 0 });
@@ -2082,7 +2160,7 @@
       renderBookmarksModalContent();
     }
 
-    /* ================= GESTOS: PINÇA DE ZOOM NÍTIDA, AUTO-IMERSIVO & TOQUE ================= */
+    /* ================= INTERAÇÃO: CLIQUE, TOQUE, PINÇA DE ZOOM & TECLADO ================= */
     let touchStartX = 0;
     let touchStartY = 0;
     let touchStartTime = 0;
@@ -2090,12 +2168,56 @@
     let pinchStartDist = 0;
     let pinchCurrentScale = 1;
     let lastScrollTop = 0;
+    let pointerDownX = 0;
+    let pointerDownY = 0;
+    let lastTouchEndTime = 0;
 
     const canvasAreaEl = document.getElementById('canvasArea');
 
     function getTouchDistance(t1, t2) {
       return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
     }
+
+    function handleReaderSurfaceTap(clientX) {
+      const screenW = window.innerWidth;
+      if (readerPrefs.flow === 'single' && zoomMultiplier <= 1.05) {
+        if (clientX < screenW * 0.22) {
+          changePage(-1);
+          return;
+        }
+        if (clientX > screenW * 0.78) {
+          changePage(1);
+          return;
+        }
+      }
+
+      const overlay = document.getElementById('readerOverlay');
+      if (overlay.classList.contains('immersive')) {
+        // Mostra ou oculta cabeçalho, barra de configurações e rodapé SEM sair do modo imersivo
+        const showHud = !overlay.classList.contains('hud-visible');
+        overlay.classList.toggle('hud-visible', showHud);
+        document.getElementById('readerSettingsBar').classList.toggle('open', showHud);
+      } else {
+        enterImmersiveMode();
+      }
+    }
+
+    canvasAreaEl.addEventListener('mousedown', (e) => {
+      pointerDownX = e.clientX;
+      pointerDownY = e.clientY;
+    });
+
+    canvasAreaEl.addEventListener('click', (e) => {
+      if (Date.now() - lastTouchEndTime < 500) return;
+      if (Math.hypot(e.clientX - pointerDownX, e.clientY - pointerDownY) > 6) return;
+      handleReaderSurfaceTap(e.clientX);
+    });
+
+    canvasAreaEl.addEventListener('wheel', (e) => {
+      if (readerPrefs.locked && e.ctrlKey) {
+        e.preventDefault();
+      }
+    }, { passive: false });
 
     canvasAreaEl.addEventListener('touchstart', (e) => {
       if (e.touches.length >= 2) {
@@ -2153,18 +2275,8 @@
       const elapsed = Date.now() - touchStartTime;
 
       if (Math.abs(diffX) < 10 && Math.abs(diffY) < 10 && elapsed < 320) {
-        const screenW = window.innerWidth;
-        if (readerPrefs.flow === 'single' && zoomMultiplier <= 1.05) {
-          if (endX < screenW * 0.22) {
-            changePage(-1);
-            return;
-          }
-          if (endX > screenW * 0.78) {
-            changePage(1);
-            return;
-          }
-        }
-        toggleImmersiveMode();
+        lastTouchEndTime = Date.now();
+        handleReaderSurfaceTap(endX);
         return;
       }
 
@@ -2175,27 +2287,51 @@
     }, { passive: true });
 
     canvasAreaEl.addEventListener('scroll', () => {
+      if (readerPrefs.locked && readerPrefs.direction === 'vertical' && canvasAreaEl.scrollLeft !== 0) {
+        canvasAreaEl.scrollLeft = 0;
+      }
+
       if (isProgrammaticScroll || readerPrefs.direction !== 'vertical') return;
       const st = canvasAreaEl.scrollTop;
       const overlay = document.getElementById('readerOverlay');
-      if (st - lastScrollTop > 55 && st > 90 && !overlay.classList.contains('immersive')) {
-        overlay.classList.add('immersive');
-        document.getElementById('readerSettingsBar').classList.remove('open');
+
+      // Oculta os controles ao rolar apenas em telas touch (evita prender o usuário no desktop)
+      const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+      if (isTouchDevice && st - lastScrollTop > 55 && st > 90) {
+        if (overlay.classList.contains('immersive')) {
+          overlay.classList.remove('hud-visible');
+          document.getElementById('readerSettingsBar').classList.remove('open');
+        }
       }
       lastScrollTop = st;
     }, { passive: true });
+
+    document.addEventListener('keydown', (e) => {
+      if (!activeDoc || document.activeElement.tagName === 'INPUT') return;
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        changePage(1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        changePage(-1);
+      } else if (e.key === 'Escape') {
+        const overlay = document.getElementById('readerOverlay');
+        if (overlay.classList.contains('immersive')) {
+          exitImmersiveMode();
+        }
+      }
+    });
 
     function closeIntegratedReader() {
       if (lazyObserver) lazyObserver.disconnect();
       if (activePageObserver) activePageObserver.disconnect();
       releaseScreenWakeLock();
+      wasNativeFullscreen = false;
       exitSystemFullscreen();
 
       const area = document.getElementById('canvasArea');
       area.querySelectorAll('canvas').forEach(c => { c.width = 0; c.height = 0; });
       area.innerHTML = '';
 
-      document.getElementById('readerOverlay').classList.remove('open', 'immersive');
+      document.getElementById('readerOverlay').classList.remove('open', 'immersive', 'hud-visible');
       document.getElementById('viewportMeta').setAttribute(
         'content',
         'width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover'
