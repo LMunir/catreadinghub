@@ -427,7 +427,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      width: 100%;
+      width: 100vw;
       height: 100vh;
       height: 100dvh;
       background: #E5DFD3;
@@ -438,7 +438,6 @@
     }
     .reader-overlay.open { display: flex; }
 
-    /* Modo Imersivo */
     .reader-overlay.immersive .reader-header,
     .reader-overlay.immersive .reader-settings-bar,
     .reader-overlay.immersive .reader-footer {
@@ -545,7 +544,8 @@
       flex-shrink: 0;
     }
 
-    .opt-pill.locked-state {
+    .opt-pill.locked-state,
+    .opt-pill.active-pill {
       background: var(--gold-accent);
       color: #231F20;
       font-weight: 600;
@@ -582,7 +582,11 @@
       touch-action: pan-x pan-y;
     }
 
-    /* Alinhamento flex-start + margin auto evita corte da margem esquerda ao dar zoom */
+    .reader-overlay.immersive .reader-canvas-area {
+      padding-top: max(6px, env(safe-area-inset-top, 0px));
+      padding-bottom: max(6px, env(safe-area-inset-bottom, 0px));
+    }
+
     .reader-canvas-area.dir-vertical {
       flex-direction: column;
       align-items: flex-start;
@@ -629,6 +633,7 @@
       justify-content: center;
       position: relative;
       flex-shrink: 0;
+      overflow: hidden;
       transform-origin: center top;
       will-change: transform;
     }
@@ -638,7 +643,10 @@
       margin: auto 0;
     }
 
-    .page-wrapper canvas { display: block; }
+    .page-wrapper canvas {
+      display: block;
+      flex-shrink: 0;
+    }
 
     .page-placeholder-label {
       color: #888;
@@ -724,7 +732,6 @@
       white-space: nowrap;
     }
 
-    /* Compactação automática no smartphone em orientação horizontal (Landscape) */
     @media (orientation: landscape) and (max-height: 540px) {
       .reader-header {
         padding-top: 5px;
@@ -754,7 +761,6 @@
       }
     }
 
-    /* Modais */
     .modal {
       display: none;
       position: fixed;
@@ -920,6 +926,7 @@
       <button class="reader-back" onclick="closeIntegratedReader()">← Voltar</button>
       <div class="reader-title" id="readerTitle">Documento</div>
       <div class="reader-tools">
+        <button class="tool-btn" title="Tela cheia sem barras do celular" onclick="setImmersiveMode(true)">⛶</button>
         <button class="tool-btn" title="Marcar página atual" onclick="addBookmarkPrompt()">+ 🔖</button>
         <button class="tool-btn" id="settingsToggleBtn" onclick="toggleSettingsBar()">⚙</button>
         <button class="tool-btn" title="Compartilhar / Abrir externo" onclick="openCurrentExternally()">↗</button>
@@ -928,8 +935,8 @@
 
     <div class="reader-settings-bar" id="readerSettingsBar">
       <button class="opt-pill" id="flowToggleBtn" onclick="toggleFlowMode()">📜 Contínuo</button>
-      <button class="opt-pill" id="dirToggleBtn" onclick="toggleDirectionMode()">↕ Vertical</button>
-      <button class="opt-pill" id="fitModeBtn" onclick="toggleLandscapeFitMode()">↔ Ajustar Largura</button>
+      <button class="opt-pill" id="dirToggleBtn" onclick="toggleDirectionMode()">↕ Rolagem Vertical</button>
+      <button class="opt-pill" id="fitModeBtn" onclick="cycleFitMode()">↔ Largura Cheia</button>
       <button class="opt-pill" id="lockToggleBtn" onclick="toggleZoomLock()">🔓 Zoom Livre</button>
       <button class="opt-pill" id="themeToggleBtn" onclick="cycleReaderTheme()">🎨 Sépia</button>
       <div class="brightness-box" title="Brilho da página">
@@ -954,7 +961,7 @@
 
       <div class="zoom-controls">
         <button class="zoom-btn" id="zoomOutBtn" onclick="adjustZoom(-0.2)">−</button>
-        <button class="zoom-reset-btn" id="zoomLabelBtn" title="Resetar zoom para 100%" onclick="resetZoom()">100%</button>
+        <button class="zoom-reset-btn" id="zoomLabelBtn" title="Resetar zoom" onclick="resetZoom()">100%</button>
         <button class="zoom-btn" id="zoomInBtn" onclick="adjustZoom(0.2)">+</button>
       </div>
 
@@ -1061,7 +1068,7 @@
       themeIdx: savedPrefs.themeIdx ?? 0,
       flow: savedPrefs.flow || 'continuous',
       direction: savedPrefs.direction || 'vertical',
-      fitMode: savedPrefs.fitMode || 'width', // 'width' (largura cheia) ou 'page' (página inteira)
+      fitMode: savedPrefs.fitMode || 'width',
       locked: savedPrefs.locked ?? false,
       brightness: savedPrefs.brightness ?? 1.0
     };
@@ -1460,7 +1467,7 @@
       reader.readAsText(file);
     }
 
-    /* ================= WAKE LOCK ================= */
+    /* ================= WAKE LOCK & TELA CHEIA NATIVA ================= */
     async function requestScreenWakeLock() {
       try {
         if ('wakeLock' in navigator) {
@@ -1475,6 +1482,69 @@
         wakeLockSentinel = null;
       }
     }
+
+    async function enterSystemFullscreen() {
+      try {
+        const el = document.documentElement;
+        if (document.fullscreenElement || document.webkitFullscreenElement) return;
+        if (el.requestFullscreen) {
+          await el.requestFullscreen({ navigationUI: 'hide' });
+        } else if (el.webkitRequestFullscreen) {
+          el.webkitRequestFullscreen();
+        }
+      } catch (e) {}
+    }
+
+    async function exitSystemFullscreen() {
+      try {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (document.webkitFullscreenElement && document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      } catch (e) {}
+    }
+
+    function setImmersiveMode(enable) {
+      const overlay = document.getElementById('readerOverlay');
+      if (!overlay) return;
+      if (enable) {
+        overlay.classList.add('immersive');
+        document.getElementById('readerSettingsBar').classList.remove('open');
+        enterSystemFullscreen();
+      } else {
+        overlay.classList.remove('immersive');
+        exitSystemFullscreen();
+      }
+      setTimeout(handleOrientationOrResize, 160);
+    }
+
+    function toggleImmersiveMode() {
+      const overlay = document.getElementById('readerOverlay');
+      const isImmersive = overlay.classList.contains('immersive');
+      const isNativeFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+
+      // Se entrou no modo imersivo apenas rolando a página (sem tela cheia nativa), um toque ativa a tela cheia real do sistema
+      if (isImmersive && !isNativeFs) {
+        setImmersiveMode(true);
+      } else {
+        setImmersiveMode(!isImmersive);
+      }
+    }
+
+    function handleFullscreenChange() {
+      const isNativeFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      const overlay = document.getElementById('readerOverlay');
+      if (!overlay || !overlay.classList.contains('open')) return;
+
+      if (!isNativeFs && overlay.classList.contains('immersive')) {
+        overlay.classList.remove('immersive');
+      }
+      setTimeout(handleOrientationOrResize, 160);
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible' && activeDoc) {
@@ -1497,7 +1567,6 @@
       const area = document.getElementById('canvasArea');
       const vpMeta = document.getElementById('viewportMeta');
 
-      // Mantém viewport bloqueado contra zoom da interface; o zoom é feito diretamente nos canvases do PDF
       vpMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
 
       themes.forEach(t => area.classList.remove(t));
@@ -1525,15 +1594,24 @@
       document.getElementById('flowToggleBtn').textContent =
         readerPrefs.flow === 'continuous' ? '📜 Contínuo' : '📄 Pág. Única';
 
-      document.getElementById('fitModeBtn').textContent =
-        readerPrefs.fitMode === 'width' ? '↔ Largura Cheia' : '▣ Página Inteira';
+      const fitBtn = document.getElementById('fitModeBtn');
+      fitBtn.classList.remove('active-pill');
+      if (readerPrefs.fitMode === 'crop') {
+        fitBtn.textContent = '✂ Sem Margens (125%)';
+        fitBtn.classList.add('active-pill');
+      } else if (readerPrefs.fitMode === 'page') {
+        fitBtn.textContent = '▣ Página Inteira';
+      } else {
+        fitBtn.textContent = '↔ Largura Cheia';
+      }
 
       const lockBtn = document.getElementById('lockToggleBtn');
       const zoomIn = document.getElementById('zoomInBtn');
       const zoomOut = document.getElementById('zoomOutBtn');
       const zoomReset = document.getElementById('zoomLabelBtn');
 
-      zoomReset.textContent = `${Math.round(zoomMultiplier * 100)}%`;
+      const effectivePct = Math.round((readerPrefs.fitMode === 'crop' ? 1.25 : 1.0) * zoomMultiplier * 100);
+      zoomReset.textContent = `${effectivePct}%`;
 
       if (readerPrefs.locked) {
         lockBtn.textContent = '🔒 Zoom Travado';
@@ -1567,8 +1645,10 @@
       rebuildReaderViewport(currentPage, 0);
     }
 
-    function toggleLandscapeFitMode() {
-      readerPrefs.fitMode = readerPrefs.fitMode === 'width' ? 'page' : 'width';
+    function cycleFitMode() {
+      const order = ['width', 'crop', 'page'];
+      const nextIdx = (order.indexOf(readerPrefs.fitMode) + 1) % order.length;
+      readerPrefs.fitMode = order[nextIdx];
       zoomMultiplier = 1.0;
       saveReaderPrefs();
       applyReaderPreferencesUI();
@@ -1683,7 +1763,6 @@
       area.querySelectorAll('canvas').forEach(c => { c.width = 0; c.height = 0; });
       area.innerHTML = '';
 
-      // Aguarda um frame para garantir que clientWidth/clientHeight já refletem a nova orientação
       await new Promise(r => requestAnimationFrame(r));
       if (currentGen !== renderGeneration) return;
 
@@ -1697,25 +1776,29 @@
       let baseScale;
       if (readerPrefs.fitMode === 'page') {
         baseScale = Math.min(availWidth / unscaled.width, availHeight / unscaled.height);
+      } else if (readerPrefs.fitMode === 'crop') {
+        baseScale = (availWidth / unscaled.width) * 1.25;
       } else {
-        // 'width': usa toda a largura da tela (ideal tanto em retrato quanto em paisagem para texto legível)
         baseScale = availWidth / unscaled.width;
       }
 
       const finalScale = baseScale * zoomMultiplier;
-      const estWidth = Math.round(unscaled.width * finalScale);
+      const fullWidth = Math.round(unscaled.width * finalScale);
       const estHeight = Math.round(unscaled.height * finalScale);
 
+      const cropToAvail = readerPrefs.fitMode === 'crop' && zoomMultiplier <= 1.02;
+      const wrapperWidth = cropToAvail ? Math.min(fullWidth, availWidth) : fullWidth;
+
       if (readerPrefs.flow === 'single') {
-        const wrapper = createPageWrapper(targetPage, estWidth, estHeight);
+        const wrapper = createPageWrapper(targetPage, wrapperWidth, estHeight);
         area.appendChild(wrapper);
-        await renderPageIntoWrapper(targetPage, wrapper, finalScale, currentGen);
+        await renderPageIntoWrapper(targetPage, wrapper, finalScale, currentGen, cropToAvail ? availWidth : null);
         area.scrollTo({ top: Math.round(estHeight * relativeRatio), left: 0 });
         updateCurrentPageState(targetPage);
         setTimeout(() => { isProgrammaticScroll = false; }, 120);
       } else {
         for (let p = 1; p <= pdfInstance.numPages; p++) {
-          area.appendChild(createPageWrapper(p, estWidth, estHeight));
+          area.appendChild(createPageWrapper(p, wrapperWidth, estHeight));
         }
 
         lazyObserver = new IntersectionObserver((entries) => {
@@ -1724,7 +1807,7 @@
             if (entry.isIntersecting) {
               if (!entry.target.dataset.rendered) {
                 entry.target.dataset.rendered = 'true';
-                renderPageIntoWrapper(pNum, entry.target, finalScale, currentGen);
+                renderPageIntoWrapper(pNum, entry.target, finalScale, currentGen, cropToAvail ? availWidth : null);
               }
             } else if (entry.target.dataset.rendered === 'true') {
               const oldCanvas = entry.target.querySelector('canvas');
@@ -1771,14 +1854,12 @@
       }
     }
 
-    // Reage automaticamente quando o smartphone é girado entre retrato e paisagem
     function handleOrientationOrResize() {
       if (!activeDoc || !pdfInstance) return;
       const area = document.getElementById('canvasArea');
       if (!area) return;
 
       const currentWidth = area.clientWidth;
-      // Ignora alterações apenas de altura (barra de endereço do navegador subindo/descendo)
       if (Math.abs(currentWidth - lastKnownCanvasWidth) < 25) return;
 
       clearTimeout(resizeDebounceTimer);
@@ -1803,7 +1884,7 @@
       return div;
     }
 
-    async function renderPageIntoWrapper(pageNum, wrapper, scale, gen) {
+    async function renderPageIntoWrapper(pageNum, wrapper, scale, gen, maxCropWidth = null) {
       if (gen !== renderGeneration || !pdfInstance) return;
       try {
         const page = await pdfInstance.getPage(pageNum);
@@ -1812,14 +1893,17 @@
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         const viewport = page.getViewport({ scale: scale * dpr });
 
+        const cssWidth = viewport.width / dpr;
+        const cssHeight = viewport.height / dpr;
+
         const canvas = document.createElement('canvas');
         canvas.width = viewport.width;
         canvas.height = viewport.height;
-        canvas.style.width = `${viewport.width / dpr}px`;
-        canvas.style.height = `${viewport.height / dpr}px`;
+        canvas.style.width = `${cssWidth}px`;
+        canvas.style.height = `${cssHeight}px`;
 
-        wrapper.style.width = `${viewport.width / dpr}px`;
-        wrapper.style.height = `${viewport.height / dpr}px`;
+        wrapper.style.width = maxCropWidth ? `${Math.min(cssWidth, maxCropWidth)}px` : `${cssWidth}px`;
+        wrapper.style.height = `${cssHeight}px`;
 
         const ctx = canvas.getContext('2d');
         await page.render({ canvasContext: ctx, viewport }).promise;
@@ -2042,7 +2126,6 @@
     }, { passive: false });
 
     canvasAreaEl.addEventListener('touchend', (e) => {
-      // Se estava em gesto de pinça com 2 dedos
       if (wasMultiTouch) {
         if (e.touches.length === 0) {
           wasMultiTouch = false;
@@ -2069,10 +2152,8 @@
       const diffY = endY - touchStartY;
       const elapsed = Date.now() - touchStartTime;
 
-      // Toque rápido e parado
       if (Math.abs(diffX) < 10 && Math.abs(diffY) < 10 && elapsed < 320) {
         const screenW = window.innerWidth;
-        // Em modo Página Única, bordas laterais viram a página e o centro alterna Modo Imersivo
         if (readerPrefs.flow === 'single' && zoomMultiplier <= 1.05) {
           if (endX < screenW * 0.22) {
             changePage(-1);
@@ -2083,18 +2164,16 @@
             return;
           }
         }
-        document.getElementById('readerOverlay').classList.toggle('immersive');
+        toggleImmersiveMode();
         return;
       }
 
-      // Swipe horizontal no modo Página Única
       if (readerPrefs.flow === 'single' && zoomMultiplier <= 1.05 && Math.abs(diffX) > Math.abs(diffY)) {
         if (diffX < -55) changePage(1);
         if (diffX > 55) changePage(-1);
       }
     }, { passive: true });
 
-    // Oculta automaticamente as barras ao rolar para baixo na leitura vertical (ganha espaço na horizontal)
     canvasAreaEl.addEventListener('scroll', () => {
       if (isProgrammaticScroll || readerPrefs.direction !== 'vertical') return;
       const st = canvasAreaEl.scrollTop;
@@ -2110,6 +2189,7 @@
       if (lazyObserver) lazyObserver.disconnect();
       if (activePageObserver) activePageObserver.disconnect();
       releaseScreenWakeLock();
+      exitSystemFullscreen();
 
       const area = document.getElementById('canvasArea');
       area.querySelectorAll('canvas').forEach(c => { c.width = 0; c.height = 0; });
