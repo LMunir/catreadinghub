@@ -1,0 +1,47 @@
+[
+  {
+    "id": "nativo-pio-ix-qui-pluribus-1846",
+    "titulo": "Qui Pluribus",
+    "papa": "Pio IX",
+    "ano": 1846,
+    "tipo": "Encíclica",
+    "formato": "pdf",
+    "arquivo": "acervo/Pio IX - Qui Pluribus - 1846.pdf"
+  },
+  {
+    "id": "nativo-leo-xiii-rerum-novarum-1891",
+    "titulo": "Rerum Novarum",
+    "papa": "Leo XIII",
+    "ano": 1891,
+    "tipo": "Encíclica",
+    "formato": "pdf",
+    "arquivo": "acervo/Leo XIII - Rerum Novarum - 1891.pdf"
+  },
+  {
+    "id": "nativo-pio-xi-divinis-redemptoris-1937",
+    "titulo": "Divinis Redemptoris",
+    "papa": "Pio XI",
+    "ano": 1937,
+    "tipo": "Encíclica",
+    "formato": "pdf",
+    "arquivo": "acervo/Pio XI - Divinis Redemptoris - 1937.pdf"
+  },
+  {
+    "id": "nativo-pio-xi-mit-brennender-sorge-1937",
+    "titulo": "Mit Brennender Sorge",
+    "papa": "Pio XI",
+    "ano": 1937,
+    "tipo": "Encíclica",
+    "formato": "pdf",
+    "arquivo": "acervo/Pio XI - Mit Brennender Sorge - 1937.pdf"
+  },
+  {
+    "id": "nativo-leo-xiv-magnifica-humanitas-2026",
+    "titulo": "Magnifica Humanitas",
+    "papa": "Leo XIV",
+    "ano": 2026,
+    "tipo": "Encíclica",
+    "formato": "pdf",
+    "arquivo": "acervo/Leo XIV - Magnifica Humanitas - 2026.pdf"
+  }
+]
