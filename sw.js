@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bibliotheca-v5';
+const CACHE_NAME = 'bibliotheca-v6';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -27,13 +27,11 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
-  // Não duplica PDFs/EPUBs no Cache Storage (gerenciados exclusivamente pelo IndexedDB)
   if (url.pathname.includes('/acervo/') || /\.(pdf|epub)$/i.test(url.pathname)) {
     e.respondWith(fetch(e.request));
     return;
   }
 
-  // Bibliotecas externas: Cache-First
   if (url.hostname.includes('cdnjs.cloudflare.com') || url.hostname.includes('fonts.')) {
     e.respondWith(
       caches.match(e.request).then((cached) => cached || fetch(e.request))
@@ -41,7 +39,6 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // Arquivos principais e catalogo.json: Network-First com fallback offline
   e.respondWith(
     fetch(e.request)
       .then((res) => {

@@ -44,7 +44,7 @@
     header {
       background-color: var(--bordo-primary);
       color: var(--surface-card);
-      padding: calc(18px + env(safe-area-inset-top, 0px)) 18px 20px;
+      padding: calc(18px + env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-right, 0px)) 20px max(18px, env(safe-area-inset-left, 0px));
       border-bottom: 3px solid var(--gold-accent);
       box-shadow: 0 2px 10px rgba(0,0,0,0.12);
     }
@@ -94,14 +94,13 @@
       border: 1px solid var(--gold-accent);
       background: var(--surface-card);
       color: var(--text-ink);
-      font-size: 16px; /* Evita zoom automático no iOS Safari ao focar */
+      font-size: 16px;
       outline: none;
     }
 
-    /* Banner Offline */
     .sync-banner {
       background: var(--surface-card);
-      margin: 12px 16px 4px;
+      margin: 12px max(16px, env(safe-area-inset-right, 0px)) 4px max(16px, env(safe-area-inset-left, 0px));
       padding: 11px 14px;
       border-radius: var(--radius);
       border: 1px solid var(--gold-subtle);
@@ -137,9 +136,8 @@
     }
     .btn-sync:disabled { opacity: 0.75; cursor: default; padding: 5px 10px; font-size: 0.73rem; }
 
-    /* Continuar Lendo */
     .continue-section {
-      padding: 8px 16px 2px;
+      padding: 8px max(16px, env(safe-area-inset-right, 0px)) 2px max(16px, env(safe-area-inset-left, 0px));
     }
 
     .continue-scroll {
@@ -183,11 +181,10 @@
       text-overflow: ellipsis;
     }
 
-    /* Filtros de Categoria */
     .filters {
       display: flex;
       gap: 7px;
-      padding: 10px 16px 6px;
+      padding: 10px max(16px, env(safe-area-inset-right, 0px)) 6px max(16px, env(safe-area-inset-left, 0px));
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
@@ -211,9 +208,8 @@
       border-color: var(--bordo-primary);
     }
 
-    /* Barra Dedicada de Filtro por Papa e Ordenação */
     .sub-controls-bar {
-      padding: 4px 16px 4px;
+      padding: 4px max(16px, env(safe-area-inset-right, 0px)) 4px max(16px, env(safe-area-inset-left, 0px));
       display: flex;
       align-items: center;
       gap: 8px;
@@ -266,7 +262,9 @@
     }
     .clear-pope-btn.visible { display: flex; }
 
-    .container { padding: 8px 16px; }
+    .container {
+      padding: 8px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px));
+    }
 
     .section-title {
       font-family: 'Cormorant Garamond', serif;
@@ -411,7 +409,7 @@
     .fab {
       position: fixed;
       bottom: calc(22px + env(safe-area-inset-bottom, 0px));
-      right: 20px;
+      right: max(20px, env(safe-area-inset-right, 0px));
       background: var(--bordo-primary);
       color: #FFF;
       border: 1px solid var(--gold-accent);
@@ -429,12 +427,14 @@
       display: none;
       position: fixed;
       inset: 0;
+      width: 100%;
       height: 100vh;
       height: 100dvh;
       background: #E5DFD3;
       z-index: 200;
       flex-direction: column;
-      overscroll-behavior: contain;
+      overscroll-behavior: none;
+      overflow: hidden;
     }
     .reader-overlay.open { display: flex; }
 
@@ -448,9 +448,9 @@
     .immersive-pill {
       display: none;
       position: fixed;
-      bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-      right: 16px;
-      background: rgba(35, 31, 32, 0.65);
+      bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      right: max(14px, env(safe-area-inset-right, 0px));
+      background: rgba(35, 31, 32, 0.68);
       color: #F7F3EA;
       padding: 4px 10px;
       border-radius: 14px;
@@ -465,7 +465,7 @@
     .reader-header {
       background: var(--bordo-primary);
       color: #FFF;
-      padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 10px;
+      padding: calc(9px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 9px max(12px, env(safe-area-inset-left, 0px));
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -517,7 +517,7 @@
       display: none;
       background: var(--bordo-dark);
       color: #F7F3EA;
-      padding: 8px 12px;
+      padding: 7px max(12px, env(safe-area-inset-right, 0px)) 7px max(12px, env(safe-area-inset-left, 0px));
       gap: 8px;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
@@ -533,7 +533,7 @@
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(180, 142, 67, 0.5);
       color: #FFFDF9;
-      padding: 6px 11px;
+      padding: 5px 10px;
       border-radius: 18px;
       font-size: 0.75rem;
       font-weight: 500;
@@ -570,30 +570,40 @@
     .reader-canvas-area {
       --reader-brightness: 1;
       flex: 1;
+      min-height: 0;
       overflow: auto;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
       display: flex;
-      padding: 14px 10px;
+      padding: 12px max(10px, env(safe-area-inset-right, 0px)) 12px max(10px, env(safe-area-inset-left, 0px));
       gap: 14px;
       transition: background 0.25s;
       position: relative;
+      touch-action: pan-x pan-y;
     }
 
+    /* Alinhamento flex-start + margin auto evita corte da margem esquerda ao dar zoom */
     .reader-canvas-area.dir-vertical {
       flex-direction: column;
-      align-items: center;
+      align-items: flex-start;
+    }
+
+    .reader-canvas-area.dir-vertical .page-wrapper {
+      margin: 0 auto;
     }
 
     .reader-canvas-area.dir-horizontal {
       flex-direction: row;
       align-items: center;
-      scroll-snap-type: x mandatory;
-      padding: 10px 16px;
+      padding: 8px max(14px, env(safe-area-inset-right, 0px)) 8px max(14px, env(safe-area-inset-left, 0px));
     }
 
-    .reader-canvas-area.zoom-locked {
-      touch-action: pan-x pan-y;
+    .reader-canvas-area.dir-horizontal.snap-enabled {
+      scroll-snap-type: x mandatory;
+    }
+
+    .reader-canvas-area.dir-horizontal.zoomed-in {
+      align-items: flex-start;
     }
 
     .reader-canvas-area.theme-sepia { background: #E9DFC8; }
@@ -619,10 +629,13 @@
       justify-content: center;
       position: relative;
       flex-shrink: 0;
+      transform-origin: center top;
+      will-change: transform;
     }
 
     .dir-horizontal .page-wrapper {
       scroll-snap-align: center;
+      margin: auto 0;
     }
 
     .page-wrapper canvas { display: block; }
@@ -636,11 +649,11 @@
     .reader-footer {
       background: var(--surface-card);
       border-top: 1px solid var(--gold-subtle);
-      padding: 9px 10px calc(9px + env(safe-area-inset-bottom, 0px));
+      padding: 8px max(10px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px));
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       flex-shrink: 0;
     }
 
@@ -648,7 +661,7 @@
       background: var(--bordo-primary);
       color: #FFF;
       border: none;
-      padding: 8px 11px;
+      padding: 7px 10px;
       border-radius: 8px;
       font-size: 0.8rem;
       font-weight: 600;
@@ -660,46 +673,88 @@
       display: flex;
       align-items: center;
       gap: 4px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-ink);
     }
 
     .page-input {
-      width: 44px;
+      width: 42px;
       text-align: center;
-      padding: 4px 2px;
+      padding: 3px 2px;
       border: 1px solid var(--gold-accent);
       border-radius: 6px;
       font-size: 16px;
     }
 
-    .zoom-controls { display: flex; gap: 4px; align-items: center; }
+    .zoom-controls { display: flex; gap: 3px; align-items: center; }
 
     .zoom-btn {
       background: #EFE8D8;
       border: 1px solid var(--gold-subtle);
       color: var(--text-ink);
-      width: 28px;
-      height: 28px;
+      width: 27px;
+      height: 27px;
       border-radius: 6px;
       font-weight: 700;
       cursor: pointer;
     }
     .zoom-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
+    .zoom-reset-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 4px;
+      cursor: pointer;
+      min-width: 36px;
+      text-align: center;
+    }
+
     .bm-footer-btn {
       background: #EFE8D8;
       border: 1px solid var(--gold-accent);
       color: var(--bordo-primary);
-      padding: 5px 8px;
+      padding: 5px 7px;
       border-radius: 7px;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
     }
 
-    /* Modais (Importação & Marcadores/Sumário) */
+    /* Compactação automática no smartphone em orientação horizontal (Landscape) */
+    @media (orientation: landscape) and (max-height: 540px) {
+      .reader-header {
+        padding-top: 5px;
+        padding-bottom: 5px;
+      }
+      .reader-title {
+        font-size: 1rem;
+      }
+      .reader-back, .tool-btn {
+        padding: 4px 8px;
+        font-size: 0.76rem;
+      }
+      .reader-settings-bar {
+        padding-top: 4px;
+        padding-bottom: 4px;
+      }
+      .reader-footer {
+        padding-top: 5px;
+        padding-bottom: calc(5px + env(safe-area-inset-bottom, 0px));
+      }
+      .nav-page-btn {
+        padding: 5px 9px;
+      }
+      .reader-canvas-area {
+        padding-top: 6px;
+        padding-bottom: 6px;
+      }
+    }
+
+    /* Modais */
     .modal {
       display: none;
       position: fixed;
@@ -818,13 +873,11 @@
     <button id="downloadAllBtn" class="btn-sync" onclick="downloadAllAcervo()">↓ Baixar acervo</button>
   </div>
 
-  <!-- Seção Continuar Lendo -->
   <section class="continue-section" id="continueSection" style="display:none;">
     <h2 class="section-title" style="margin-top:2px;"><span>Continuar Lendo</span></h2>
     <div class="continue-scroll" id="continueList"></div>
   </section>
 
-  <!-- Filtros por Categoria -->
   <div class="filters">
     <button class="chip active" data-filter="todos">Todos</button>
     <button class="chip" data-filter="offline">✓ Offline</button>
@@ -838,7 +891,6 @@
     <button class="chip" data-filter="Decreto">Decretos</button>
   </div>
 
-  <!-- Barra Dedicada de Filtro por Papa e Ordenação -->
   <div class="sub-controls-bar">
     <select id="popeFilter" class="pope-select">
       <option value="">Todos os Pontífices</option>
@@ -877,6 +929,7 @@
     <div class="reader-settings-bar" id="readerSettingsBar">
       <button class="opt-pill" id="flowToggleBtn" onclick="toggleFlowMode()">📜 Contínuo</button>
       <button class="opt-pill" id="dirToggleBtn" onclick="toggleDirectionMode()">↕ Vertical</button>
+      <button class="opt-pill" id="fitModeBtn" onclick="toggleLandscapeFitMode()">↔ Ajustar Largura</button>
       <button class="opt-pill" id="lockToggleBtn" onclick="toggleZoomLock()">🔓 Zoom Livre</button>
       <button class="opt-pill" id="themeToggleBtn" onclick="cycleReaderTheme()">🎨 Sépia</button>
       <div class="brightness-box" title="Brilho da página">
@@ -901,6 +954,7 @@
 
       <div class="zoom-controls">
         <button class="zoom-btn" id="zoomOutBtn" onclick="adjustZoom(-0.2)">−</button>
+        <button class="zoom-reset-btn" id="zoomLabelBtn" title="Resetar zoom para 100%" onclick="resetZoom()">100%</button>
         <button class="zoom-btn" id="zoomInBtn" onclick="adjustZoom(0.2)">+</button>
       </div>
 
@@ -965,7 +1019,6 @@
   </div>
 
   <script>
-    // Gera ícone PNG em memória para iOS Safari ("Adicionar à Tela de Início")
     (function generateAppleTouchIcon() {
       try {
         const c = document.createElement('canvas');
@@ -1008,6 +1061,7 @@
       themeIdx: savedPrefs.themeIdx ?? 0,
       flow: savedPrefs.flow || 'continuous',
       direction: savedPrefs.direction || 'vertical',
+      fitMode: savedPrefs.fitMode || 'width', // 'width' (largura cheia) ou 'page' (página inteira)
       locked: savedPrefs.locked ?? false,
       brightness: savedPrefs.brightness ?? 1.0
     };
@@ -1026,6 +1080,9 @@
     let activePageObserver = null;
     let saveProgressTimer = null;
     let wakeLockSentinel = null;
+    let isProgrammaticScroll = false;
+    let lastKnownCanvasWidth = 0;
+    let resizeDebounceTimer = null;
 
     function normalizeText(str) {
       return String(str || '')
@@ -1078,7 +1135,6 @@
           };
         });
 
-        // Remove registros nativos órfãos (caso um PDF tenha sido renomeado/removido no PC)
         const orphanIds = [];
         localMap.forEach((doc, id) => {
           if (catalogFetched && id.startsWith('nativo-')) {
@@ -1404,7 +1460,7 @@
       reader.readAsText(file);
     }
 
-    /* ================= WAKE LOCK (TELA ACESA) ================= */
+    /* ================= WAKE LOCK ================= */
     async function requestScreenWakeLock() {
       try {
         if ('wakeLock' in navigator) {
@@ -1441,6 +1497,9 @@
       const area = document.getElementById('canvasArea');
       const vpMeta = document.getElementById('viewportMeta');
 
+      // Mantém viewport bloqueado contra zoom da interface; o zoom é feito diretamente nos canvases do PDF
+      vpMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+
       themes.forEach(t => area.classList.remove(t));
       const activeTheme = themes[readerPrefs.themeIdx];
       area.classList.add(activeTheme);
@@ -1449,32 +1508,43 @@
       area.style.setProperty('--reader-brightness', readerPrefs.brightness);
       document.getElementById('brightnessSlider').value = readerPrefs.brightness;
 
-      area.classList.remove('dir-vertical', 'dir-horizontal');
-      area.classList.add(readerPrefs.direction === 'horizontal' ? 'dir-horizontal' : 'dir-vertical');
-      document.getElementById('dirToggleBtn').textContent =
-        readerPrefs.direction === 'horizontal' ? '↔ Horizontal' : '↕ Vertical';
+      area.classList.remove('dir-vertical', 'dir-horizontal', 'snap-enabled', 'zoomed-in');
+      if (readerPrefs.direction === 'horizontal') {
+        area.classList.add('dir-horizontal');
+        if (zoomMultiplier <= 1.02) {
+          area.classList.add('snap-enabled');
+        } else {
+          area.classList.add('zoomed-in');
+        }
+        document.getElementById('dirToggleBtn').textContent = '↔ Paginado Lateral';
+      } else {
+        area.classList.add('dir-vertical');
+        document.getElementById('dirToggleBtn').textContent = '↕ Rolagem Vertical';
+      }
 
       document.getElementById('flowToggleBtn').textContent =
         readerPrefs.flow === 'continuous' ? '📜 Contínuo' : '📄 Pág. Única';
 
+      document.getElementById('fitModeBtn').textContent =
+        readerPrefs.fitMode === 'width' ? '↔ Largura Cheia' : '▣ Página Inteira';
+
       const lockBtn = document.getElementById('lockToggleBtn');
       const zoomIn = document.getElementById('zoomInBtn');
       const zoomOut = document.getElementById('zoomOutBtn');
+      const zoomReset = document.getElementById('zoomLabelBtn');
+
+      zoomReset.textContent = `${Math.round(zoomMultiplier * 100)}%`;
 
       if (readerPrefs.locked) {
-        area.classList.add('zoom-locked');
         lockBtn.textContent = '🔒 Zoom Travado';
         lockBtn.classList.add('locked-state');
         zoomIn.disabled = true;
         zoomOut.disabled = true;
-        vpMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
       } else {
-        area.classList.remove('zoom-locked');
         lockBtn.textContent = '🔓 Zoom Livre';
         lockBtn.classList.remove('locked-state');
         zoomIn.disabled = false;
         zoomOut.disabled = false;
-        vpMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover');
       }
     }
 
@@ -1486,7 +1556,7 @@
       readerPrefs.flow = readerPrefs.flow === 'continuous' ? 'single' : 'continuous';
       saveReaderPrefs();
       applyReaderPreferencesUI();
-      rebuildReaderViewport(currentPage);
+      rebuildReaderViewport(currentPage, 0);
     }
 
     function toggleDirectionMode() {
@@ -1494,7 +1564,15 @@
       zoomMultiplier = 1.0;
       saveReaderPrefs();
       applyReaderPreferencesUI();
-      rebuildReaderViewport(currentPage);
+      rebuildReaderViewport(currentPage, 0);
+    }
+
+    function toggleLandscapeFitMode() {
+      readerPrefs.fitMode = readerPrefs.fitMode === 'width' ? 'page' : 'width';
+      zoomMultiplier = 1.0;
+      saveReaderPrefs();
+      applyReaderPreferencesUI();
+      rebuildReaderViewport(currentPage, 0);
     }
 
     function toggleZoomLock() {
@@ -1509,7 +1587,15 @@
       applyReaderPreferencesUI();
     }
 
-    /* ================= MOTOR DE RENDERIZAÇÃO & GESTÃO DE MEMÓRIA ================= */
+    /* ================= MOTOR DE RENDERIZAÇÃO & ROTAÇÃO ================= */
+    function getRelativePageScrollRatio() {
+      const area = document.getElementById('canvasArea');
+      const el = document.querySelector(`.page-wrapper[data-page="${currentPage}"]`);
+      if (!area || !el || el.offsetHeight <= 0) return 0;
+      const offsetWithinPage = area.scrollTop - el.offsetTop;
+      return Math.max(0, Math.min(0.95, offsetWithinPage / el.offsetHeight));
+    }
+
     async function openIntegratedReader(id) {
       const doc = mergedDocs.find(d => d.id === id);
       if (!doc) return;
@@ -1547,7 +1633,7 @@
       document.getElementById('totalPagesSpan').textContent = `de ${pdfInstance.numPages}`;
       document.getElementById('pageInput').max = pdfInstance.numPages;
 
-      await rebuildReaderViewport(currentPage);
+      await rebuildReaderViewport(currentPage, 0);
     }
 
     async function loadPdfOutline(pdf) {
@@ -1583,11 +1669,12 @@
       } catch (e) {}
     }
 
-    async function rebuildReaderViewport(targetPage) {
+    async function rebuildReaderViewport(targetPage, relativeRatio = 0) {
       if (!pdfInstance || !activeDoc) return;
 
       renderGeneration++;
       const currentGen = renderGeneration;
+      isProgrammaticScroll = true;
 
       if (lazyObserver) lazyObserver.disconnect();
       if (activePageObserver) activePageObserver.disconnect();
@@ -1596,14 +1683,24 @@
       area.querySelectorAll('canvas').forEach(c => { c.width = 0; c.height = 0; });
       area.innerHTML = '';
 
+      // Aguarda um frame para garantir que clientWidth/clientHeight já refletem a nova orientação
+      await new Promise(r => requestAnimationFrame(r));
+      if (currentGen !== renderGeneration) return;
+
+      lastKnownCanvasWidth = area.clientWidth;
+
       const samplePage = await pdfInstance.getPage(targetPage);
       const unscaled = samplePage.getViewport({ scale: 1 });
-      const availWidth = area.clientWidth - 24;
-      const availHeight = area.clientHeight - 24;
+      const availWidth = Math.max(200, area.clientWidth - 20);
+      const availHeight = Math.max(160, area.clientHeight - 20);
 
-      const baseScale = readerPrefs.direction === 'horizontal'
-        ? Math.min(availWidth / unscaled.width, availHeight / unscaled.height)
-        : availWidth / unscaled.width;
+      let baseScale;
+      if (readerPrefs.fitMode === 'page') {
+        baseScale = Math.min(availWidth / unscaled.width, availHeight / unscaled.height);
+      } else {
+        // 'width': usa toda a largura da tela (ideal tanto em retrato quanto em paisagem para texto legível)
+        baseScale = availWidth / unscaled.width;
+      }
 
       const finalScale = baseScale * zoomMultiplier;
       const estWidth = Math.round(unscaled.width * finalScale);
@@ -1613,14 +1710,14 @@
         const wrapper = createPageWrapper(targetPage, estWidth, estHeight);
         area.appendChild(wrapper);
         await renderPageIntoWrapper(targetPage, wrapper, finalScale, currentGen);
-        area.scrollTo({ top: 0, left: 0 });
+        area.scrollTo({ top: Math.round(estHeight * relativeRatio), left: 0 });
         updateCurrentPageState(targetPage);
+        setTimeout(() => { isProgrammaticScroll = false; }, 120);
       } else {
         for (let p = 1; p <= pdfInstance.numPages; p++) {
           area.appendChild(createPageWrapper(p, estWidth, estHeight));
         }
 
-        // Renderiza páginas próximas e descarrega páginas distantes para economizar RAM (vital no iOS Safari)
         lazyObserver = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
             const pNum = parseInt(entry.target.dataset.page);
@@ -1642,6 +1739,7 @@
         }, { root: area, rootMargin: '1100px' });
 
         activePageObserver = new IntersectionObserver((entries) => {
+          if (isProgrammaticScroll) return;
           let bestPage = null;
           let maxRatio = 0;
           entries.forEach((entry) => {
@@ -1653,17 +1751,47 @@
           if (bestPage && bestPage !== currentPage) {
             updateCurrentPageState(bestPage);
           }
-        }, { root: area, threshold: [0.25, 0.5, 0.75] });
+        }, { root: area, threshold: [0.15, 0.4, 0.7] });
 
         document.querySelectorAll('.page-wrapper').forEach(el => {
           lazyObserver.observe(el);
           activePageObserver.observe(el);
         });
 
-        scrollToPageElement(targetPage, 'auto');
+        const targetEl = document.querySelector(`.page-wrapper[data-page="${targetPage}"]`);
+        if (targetEl) {
+          if (readerPrefs.direction === 'horizontal') {
+            targetEl.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'center' });
+          } else {
+            area.scrollTop = targetEl.offsetTop + Math.round(targetEl.offsetHeight * relativeRatio) - 10;
+          }
+        }
         updateCurrentPageState(targetPage);
+        setTimeout(() => { isProgrammaticScroll = false; }, 220);
       }
     }
+
+    // Reage automaticamente quando o smartphone é girado entre retrato e paisagem
+    function handleOrientationOrResize() {
+      if (!activeDoc || !pdfInstance) return;
+      const area = document.getElementById('canvasArea');
+      if (!area) return;
+
+      const currentWidth = area.clientWidth;
+      // Ignora alterações apenas de altura (barra de endereço do navegador subindo/descendo)
+      if (Math.abs(currentWidth - lastKnownCanvasWidth) < 25) return;
+
+      clearTimeout(resizeDebounceTimer);
+      resizeDebounceTimer = setTimeout(() => {
+        const ratio = getRelativePageScrollRatio();
+        rebuildReaderViewport(currentPage, ratio);
+      }, 180);
+    }
+
+    window.addEventListener('resize', handleOrientationOrResize);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(handleOrientationOrResize, 220);
+    });
 
     function createPageWrapper(pageNum, width, height) {
       const div = document.createElement('div');
@@ -1733,7 +1861,7 @@
         await saveRecordToDB(activeDoc);
         renderContinueReading();
         renderDocs();
-      }, 400);
+      }, 450);
     }
 
     function changePage(delta) {
@@ -1741,7 +1869,7 @@
       const target = currentPage + delta;
       if (target >= 1 && target <= pdfInstance.numPages) {
         if (readerPrefs.flow === 'single') {
-          rebuildReaderViewport(target);
+          rebuildReaderViewport(target, 0);
         } else {
           scrollToPageElement(target, 'smooth');
           updateCurrentPageState(target);
@@ -1754,10 +1882,12 @@
       const num = parseInt(val);
       if (!isNaN(num) && num >= 1 && num <= pdfInstance.numPages) {
         if (readerPrefs.flow === 'single') {
-          rebuildReaderViewport(num);
+          rebuildReaderViewport(num, 0);
         } else {
+          isProgrammaticScroll = true;
           scrollToPageElement(num, 'auto');
           updateCurrentPageState(num);
+          setTimeout(() => { isProgrammaticScroll = false; }, 220);
         }
       } else {
         document.getElementById('pageInput').value = currentPage;
@@ -1766,8 +1896,18 @@
 
     function adjustZoom(delta) {
       if (readerPrefs.locked) return;
-      zoomMultiplier = Math.min(2.6, Math.max(0.6, +(zoomMultiplier + delta).toFixed(1)));
-      rebuildReaderViewport(currentPage);
+      const ratio = getRelativePageScrollRatio();
+      zoomMultiplier = Math.min(3.0, Math.max(0.6, +(zoomMultiplier + delta).toFixed(2)));
+      applyReaderPreferencesUI();
+      rebuildReaderViewport(currentPage, ratio);
+    }
+
+    function resetZoom() {
+      if (readerPrefs.locked || zoomMultiplier === 1.0) return;
+      const ratio = getRelativePageScrollRatio();
+      zoomMultiplier = 1.0;
+      applyReaderPreferencesUI();
+      rebuildReaderViewport(currentPage, ratio);
     }
 
     /* ================= MARCADORES & SUMÁRIO INTERNO ================= */
@@ -1858,21 +1998,70 @@
       renderBookmarksModalContent();
     }
 
-    /* ================= GESTOS: TOQUE IMERSIVO & SWIPE ================= */
+    /* ================= GESTOS: PINÇA DE ZOOM NÍTIDA, AUTO-IMERSIVO & TOQUE ================= */
     let touchStartX = 0;
     let touchStartY = 0;
     let touchStartTime = 0;
+    let wasMultiTouch = false;
+    let pinchStartDist = 0;
+    let pinchCurrentScale = 1;
+    let lastScrollTop = 0;
+
     const canvasAreaEl = document.getElementById('canvasArea');
 
+    function getTouchDistance(t1, t2) {
+      return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+    }
+
     canvasAreaEl.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 1) {
+      if (e.touches.length >= 2) {
+        wasMultiTouch = true;
+        if (!readerPrefs.locked) {
+          pinchStartDist = getTouchDistance(e.touches[0], e.touches[1]);
+          pinchCurrentScale = 1;
+        }
+        return;
+      }
+      if (e.touches.length === 1 && !wasMultiTouch) {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
         touchStartTime = Date.now();
       }
     }, { passive: true });
 
+    canvasAreaEl.addEventListener('touchmove', (e) => {
+      if (e.touches.length >= 2 && !readerPrefs.locked && pinchStartDist > 0) {
+        e.preventDefault();
+        const dist = getTouchDistance(e.touches[0], e.touches[1]);
+        pinchCurrentScale = Math.max(0.6, Math.min(2.4, dist / pinchStartDist));
+        const activeWrapper = document.querySelector(`.page-wrapper[data-page="${currentPage}"]`);
+        if (activeWrapper) {
+          activeWrapper.style.transform = `scale(${pinchCurrentScale})`;
+        }
+      }
+    }, { passive: false });
+
     canvasAreaEl.addEventListener('touchend', (e) => {
+      // Se estava em gesto de pinça com 2 dedos
+      if (wasMultiTouch) {
+        if (e.touches.length === 0) {
+          wasMultiTouch = false;
+          if (!readerPrefs.locked && pinchStartDist > 0 && Math.abs(pinchCurrentScale - 1) > 0.08) {
+            const ratio = getRelativePageScrollRatio();
+            zoomMultiplier = Math.min(3.0, Math.max(0.6, +(zoomMultiplier * pinchCurrentScale).toFixed(2)));
+            pinchStartDist = 0;
+            pinchCurrentScale = 1;
+            applyReaderPreferencesUI();
+            rebuildReaderViewport(currentPage, ratio);
+          } else {
+            document.querySelectorAll('.page-wrapper').forEach(w => w.style.transform = '');
+            pinchStartDist = 0;
+            pinchCurrentScale = 1;
+          }
+        }
+        return;
+      }
+
       if (e.changedTouches.length !== 1) return;
       const endX = e.changedTouches[0].clientX;
       const endY = e.changedTouches[0].clientY;
@@ -1880,15 +2069,41 @@
       const diffY = endY - touchStartY;
       const elapsed = Date.now() - touchStartTime;
 
+      // Toque rápido e parado
       if (Math.abs(diffX) < 10 && Math.abs(diffY) < 10 && elapsed < 320) {
+        const screenW = window.innerWidth;
+        // Em modo Página Única, bordas laterais viram a página e o centro alterna Modo Imersivo
+        if (readerPrefs.flow === 'single' && zoomMultiplier <= 1.05) {
+          if (endX < screenW * 0.22) {
+            changePage(-1);
+            return;
+          }
+          if (endX > screenW * 0.78) {
+            changePage(1);
+            return;
+          }
+        }
         document.getElementById('readerOverlay').classList.toggle('immersive');
         return;
       }
 
-      if (readerPrefs.flow === 'single' && readerPrefs.direction === 'horizontal' && zoomMultiplier <= 1.05) {
+      // Swipe horizontal no modo Página Única
+      if (readerPrefs.flow === 'single' && zoomMultiplier <= 1.05 && Math.abs(diffX) > Math.abs(diffY)) {
         if (diffX < -55) changePage(1);
         if (diffX > 55) changePage(-1);
       }
+    }, { passive: true });
+
+    // Oculta automaticamente as barras ao rolar para baixo na leitura vertical (ganha espaço na horizontal)
+    canvasAreaEl.addEventListener('scroll', () => {
+      if (isProgrammaticScroll || readerPrefs.direction !== 'vertical') return;
+      const st = canvasAreaEl.scrollTop;
+      const overlay = document.getElementById('readerOverlay');
+      if (st - lastScrollTop > 55 && st > 90 && !overlay.classList.contains('immersive')) {
+        overlay.classList.add('immersive');
+        document.getElementById('readerSettingsBar').classList.remove('open');
+      }
+      lastScrollTop = st;
     }, { passive: true });
 
     function closeIntegratedReader() {
@@ -1924,7 +2139,6 @@
       const fileName = `${doc.titulo}.${ext}`;
       const fileObj = new File([doc.arquivoBlob], fileName, { type: mime });
 
-      // Share Sheet nativo (funciona no iOS Safari e Android Chrome)
       if (navigator.canShare && navigator.canShare({ files: [fileObj] })) {
         try {
           await navigator.share({ files: [fileObj], title: doc.titulo });
